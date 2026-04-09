@@ -51,8 +51,8 @@ class Auth:
         try:
             res = db.table("users").delete().eq("id", user_id).execute()
 
-            if not res.data:
-                raise UserNotFound("User not found")
-
         except Exception as e:
             raise AuthError(f"Delete failed") from e
+
+        if not res.data:
+            raise UserNotFound("User not found")
