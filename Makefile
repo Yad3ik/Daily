@@ -5,7 +5,7 @@ PIP := $(VENV)/bin/pip
 
 .PHONY: setup env venv install
 
-setup: check-version env venv install
+setup: env venv install check-version
 	@echo "\n\n\t\tNow fill in your .env file"
 
 env:
