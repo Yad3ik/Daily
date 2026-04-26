@@ -17,7 +17,7 @@ class ToDoList:
             'name' : desc
         }).execute()
 
-        return res[0]
+        return res.data[0]
     
     @staticmethod
     def delete_task(task_id: str) -> None:
@@ -34,5 +34,9 @@ class ToDoList:
         }).eq('id', task_id).execute()
     
     @staticmethod
-    def get_all(user_id: str) -> list[dict]:
+    def get_all() -> list[dict]:
         db = ToDoList._get_db()
+
+        res = db.table('tasks').select('*').eq('user_id', Session.USERID).execute()
+
+        return res.data
