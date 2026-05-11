@@ -24,3 +24,6 @@ check-version:
 	@EXPECTED=$$(cat .python-version); \
 	CURRENT=$$(python3 --version | cut -d' ' -f2); \
 	[ "$$EXPECTED" = "$$CURRENT" ] || echo "Warning: expected $$EXPECTED, got $$CURRENT"
+
+up:
+	$(PYTHON) src/front/auth_window/auth_window.py
