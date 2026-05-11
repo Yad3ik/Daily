@@ -1,6 +1,34 @@
+from typing import Any, ClassVar
+from pydantic import BaseModel, Field
+from src.back.db.exceptions import AuthError
+from src.back.structures import Task
 
-class Session:
-    USERID = None
-    LOGIN = None
+class CurrentUser(BaseModel):
+    id: str = Field(..., min_length=1)
+    login: str = Field(..., min_length=1)
 
-    Tasks = None
+
+class Me:
+    """Глобальное состояние сессии."""
+
+    user: ClassVar[CurrentUser | None] = None
+    Tasks: ClassVar[list[Task] | None] = None
+
+    @classmethod
+    def set_user(cls, user: CurrentUser | None) -> None:
+        cls.user = user
+
+    @classmethod
+    def require_user_id(cls) -> str:
+        if cls.user is None:
+            raise AuthError("Not authenticated")
+        return cls.user.id
+
+    @classmethod
+    def clear(cls) -> None:
+        cls.set_user(None)
+        cls.Tasks = None
+    
+    @classmethod
+    def is_authenticated(cls) -> bool:
+        return cls.user is not None

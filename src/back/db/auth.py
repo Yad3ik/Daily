@@ -1,7 +1,6 @@
 import bcrypt
 
 from supabase import Client, create_client
-
 from src.config import Config
 from src.back.db.exceptions import *
 
