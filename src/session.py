@@ -1,7 +1,7 @@
 from typing import ClassVar
 from pydantic import BaseModel, Field
 from src.back.db.exceptions import AuthError
-from src.back.structures import Task, sort_tasks
+from src.back.structures import Task
 
 class CurrentUser(BaseModel):
     id: str = Field(..., min_length=1)
