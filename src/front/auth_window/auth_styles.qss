@@ -193,6 +193,12 @@ QLabel#fieldLabel {
   font-weight: 800;
 }
 
+QLabel#fieldError {
+  color: #ff5c7a;
+  font-size: 12px;
+  font-weight: 600;
+}
+
 QFrame#inputFrame {
   background-color: #1b1921;
   border: 1px solid #322d39;

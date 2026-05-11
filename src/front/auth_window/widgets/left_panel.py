@@ -2,7 +2,13 @@ from pathlib import Path
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QVBoxLayout
+from PyQt5.QtWidgets import (
+    QFrame,
+    QHBoxLayout,
+    QLabel,
+    QSizePolicy,
+    QVBoxLayout,
+)
 
 
 class EventRow(QFrame):
@@ -65,18 +71,37 @@ class ScheduleCard(QFrame):
         layout.addWidget(EventRow("19:30", "Бот матана", "Учеба", "purple"))
 
 
-class FadedImage(QLabel):
-    def __init__(self, image_path: Path, width: int, height: int):
+class ScalingIllustration(QLabel):
+    """Растягивается по высоте между текстом и карточкой; картинка заполняет область."""
+
+    # >1.0 — «приближение»: масштаб к большей цели, по краям обрезается в QLabel.
+    _ZOOM = 1.22
+
+    def __init__(self, image_path: Path):
         super().__init__()
         self.setObjectName("illustration")
+        self._source = QPixmap(str(image_path))
         self.setAlignment(Qt.AlignCenter)
-        self.setFixedHeight(height)
-        self.setPixmap(self._make_pixmap(image_path, width, height - 4))
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        self.setMinimumHeight(200)
 
-    def _make_pixmap(self, image_path: Path, width: int, height: int):
-        return QPixmap(str(image_path)).scaled(
-            width, height, Qt.KeepAspectRatio, Qt.SmoothTransformation
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self._update_pixmap()
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        self._update_pixmap()
+
+    def _update_pixmap(self):
+        if self._source.isNull():
+            return
+        w = max(1, round(self.width() * self._ZOOM))
+        h = max(1, round(self.height() * self._ZOOM))
+        scaled = self._source.scaled(
+            w, h, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation
         )
+        self.setPixmap(scaled)
 
 
 class LeftPanel(QFrame):
@@ -85,9 +110,10 @@ class LeftPanel(QFrame):
         self.asserts_dir = asserts_dir
         self.setObjectName("leftPanel")
         self.setFixedWidth(480)
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
 
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(34, 34, 26, 20)
+        layout.setContentsMargins(34, 34, 26, 30)
         layout.setSpacing(0)
 
         logo_row = QHBoxLayout()
@@ -120,11 +146,7 @@ class LeftPanel(QFrame):
         description = QLabel("Задачи, дедлайны и личные планы —\nв одном пространстве.")
         description.setObjectName("description")
 
-        illustration = FadedImage(
-            asserts_dir / "images" / "desk_scene.png",
-            width=380,
-            height=210,
-        )
+        illustration = ScalingIllustration(asserts_dir / "images" / "desk_scene.png")
 
         layout.addLayout(logo_row)
         layout.addSpacing(28)
@@ -133,14 +155,13 @@ class LeftPanel(QFrame):
         layout.addWidget(slogan)
         layout.addSpacing(18)
         layout.addWidget(description)
-        layout.addSpacing(-8)
-        layout.addWidget(illustration)
-        layout.addSpacing(30)
+        layout.addSpacing(10)
+        layout.addWidget(illustration, 1)
 
         schedule_row = QHBoxLayout()
         schedule_row.setContentsMargins(0, 0, 0, 0)
         schedule_row.addStretch(1)
         schedule_row.addWidget(ScheduleCard())
         schedule_row.addStretch(1)
+        layout.addSpacing(16)
         layout.addLayout(schedule_row)
-        layout.addStretch(1)
