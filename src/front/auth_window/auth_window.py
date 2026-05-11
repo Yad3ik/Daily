@@ -1,15 +1,21 @@
 import sys
 from pathlib import Path
 
+_REPO_ROOT = Path(__file__).resolve().parents[3]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 from PyQt5.QtCore import QRectF, Qt
 from PyQt5.QtGui import QColor, QFont, QFontDatabase, QIcon, QPainter, QPainterPath
 from PyQt5.QtWidgets import QApplication, QFrame, QHBoxLayout, QVBoxLayout, QWidget
 
 if __package__:
+    from .planner_window import PlannerWindow
     from .widgets import AuthCard, LeftPanel, TitleBar
     from .widgets.asset_builder import ensure_asserts
 else:
     sys.path.append(str(Path(__file__).resolve().parent))
+    from planner_window import PlannerWindow
     from widgets import AuthCard, LeftPanel, TitleBar
     from widgets.asset_builder import ensure_asserts
 
@@ -23,6 +29,7 @@ APP_ICON_PATH = ASSERTS_DIR / "icons" / "daily_logo.png"
 class AuthWindow(QWidget):
     def __init__(self):
         super().__init__()
+        self._planner_window: QWidget | None = None
         ensure_asserts()
         self._load_fonts()
 
@@ -65,7 +72,8 @@ class AuthWindow(QWidget):
         right_layout = QVBoxLayout(right)
         right_layout.setContentsMargins(30, 24, 36, 36)
         right_layout.setSpacing(0)
-        right_layout.addWidget(AuthCard(ASSERTS_DIR))
+        self._auth_card = AuthCard(ASSERTS_DIR, self._on_auth_success)
+        right_layout.addWidget(self._auth_card)
 
         content.addWidget(LeftPanel(ASSERTS_DIR))
         content.addWidget(right, 1)
@@ -96,6 +104,12 @@ class AuthWindow(QWidget):
         painter.setPen(QColor("#393443"))
         painter.drawPath(path)
         super().paintEvent(event)
+
+    def _on_auth_success(self) -> None:
+        if self._planner_window is None:
+            self._planner_window = PlannerWindow()
+        self._planner_window.show()
+        self.hide()
 
 
 def _app_icon() -> QIcon:

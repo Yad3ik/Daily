@@ -26,4 +26,4 @@ check-version:
 	[ "$$EXPECTED" = "$$CURRENT" ] || echo "Warning: expected $$EXPECTED, got $$CURRENT"
 
 up:
-	$(PYTHON) src/front/auth_window/auth_window.py
+	$(PY) src/front/auth_window/auth_window.py
