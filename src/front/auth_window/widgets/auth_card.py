@@ -15,6 +15,8 @@ from .input_field import AuthInput
 
 
 class FormPage(QFrame):
+    MIN_PASSWORD_LEN = 5
+
     def __init__(
         self,
         asserts_dir: Path,
@@ -24,9 +26,11 @@ class FormPage(QFrame):
         password_hint: str,
         button_text: str,
         bottom_text: Optional[str] = None,
+        require_password_repeat: bool = False,
     ):
         super().__init__()
         self.setObjectName("formPage")
+        self._require_password_repeat = require_password_repeat
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -45,10 +49,10 @@ class FormPage(QFrame):
         password_label.setObjectName("fieldLabel")
         self.password_input = AuthInput(asserts_dir, password_hint, "lock.png", password=True)
 
-        submit = QPushButton(button_text)
-        submit.setObjectName("mainButton")
-        submit.setFixedHeight(56)
-        submit.setCursor(Qt.PointingHandCursor)
+        self.submit = QPushButton(button_text)
+        self.submit.setObjectName("mainButton")
+        self.submit.setFixedHeight(56)
+        self.submit.setCursor(Qt.PointingHandCursor)
 
         layout.addWidget(title_label)
         layout.addSpacing(8)
@@ -61,8 +65,48 @@ class FormPage(QFrame):
         layout.addWidget(password_label)
         layout.addSpacing(9)
         layout.addWidget(self.password_input)
-        layout.addSpacing(36)
-        layout.addWidget(submit)
+
+        self.repeat_password_input: Optional[AuthInput] = None
+        self._password_error: Optional[QLabel] = None
+        self._repeat_error: Optional[QLabel] = None
+
+        if require_password_repeat:
+            self._password_error = QLabel()
+            self._password_error.setObjectName("fieldError")
+            self._password_error.setWordWrap(True)
+            self._password_error.hide()
+
+            layout.addSpacing(6)
+            layout.addWidget(self._password_error)
+
+            repeat_label = QLabel("ПОВТОРИТЕ ПАРОЛЬ")
+            repeat_label.setObjectName("fieldLabel")
+            layout.addSpacing(22)
+            layout.addWidget(repeat_label)
+            layout.addSpacing(9)
+            self.repeat_password_input = AuthInput(
+                asserts_dir, "Повторите пароль", "lock.png", password=True
+            )
+            layout.addWidget(self.repeat_password_input)
+
+            self._repeat_error = QLabel()
+            self._repeat_error.setObjectName("fieldError")
+            self._repeat_error.setWordWrap(True)
+            self._repeat_error.hide()
+            layout.addSpacing(6)
+            layout.addWidget(self._repeat_error)
+
+            self.password_input.line_edit.textChanged.connect(self._update_register_password_hints)
+            self.repeat_password_input.line_edit.textChanged.connect(
+                self._update_register_password_hints
+            )
+            self.submit.clicked.connect(self._on_register_submit)
+            layout.addSpacing(36)
+            layout.addWidget(self.submit)
+        else:
+            layout.addStretch(1)
+            layout.addSpacing(36)
+            layout.addWidget(self.submit)
 
         if bottom_text:
             bottom = QLabel(bottom_text)
@@ -71,7 +115,50 @@ class FormPage(QFrame):
             layout.addSpacing(34)
             layout.addWidget(bottom)
 
-        layout.addStretch(1)
+        if require_password_repeat:
+            layout.addStretch(1)
+
+    def _update_register_password_hints(self):
+        if not self._require_password_repeat or self._password_error is None:
+            return
+        pw = self.password_input.text()
+        rep = self.repeat_password_input.text() if self.repeat_password_input else ""
+
+        if pw and len(pw) < self.MIN_PASSWORD_LEN:
+            self._password_error.setText(
+                f"Пароль должен содержать не менее {self.MIN_PASSWORD_LEN} символов"
+            )
+            self._password_error.show()
+        else:
+            self._password_error.hide()
+
+        if rep and pw != rep:
+            self._repeat_error.setText("Пароли не совпадают")
+            self._repeat_error.show()
+        else:
+            self._repeat_error.hide()
+
+    def _register_form_valid(self) -> bool:
+        pw = self.password_input.text()
+        rep = self.repeat_password_input.text()
+        if len(pw) < self.MIN_PASSWORD_LEN:
+            self._password_error.setText(
+                f"Пароль должен содержать не менее {self.MIN_PASSWORD_LEN} символов"
+            )
+            self._password_error.show()
+            self._repeat_error.hide()
+            return False
+        self._password_error.hide()
+        if pw != rep:
+            self._repeat_error.setText("Пароли не совпадают")
+            self._repeat_error.show()
+            return False
+        self._repeat_error.hide()
+        return True
+
+    def _on_register_submit(self):
+        if not self._register_form_valid():
+            return
 
 
 class AuthCard(QFrame):
@@ -122,6 +209,7 @@ class AuthCard(QFrame):
             "Придумайте логин",
             "Придумайте пароль",
             "Создать аккаунт",
+            require_password_repeat=True,
         )
         self.stack.addWidget(self.login_page)
         self.stack.addWidget(self.register_page)

@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 
 from PyQt5.QtCore import QRectF, Qt
-from PyQt5.QtGui import QColor, QFont, QFontDatabase, QPainter, QPainterPath
+from PyQt5.QtGui import QColor, QFont, QFontDatabase, QIcon, QPainter, QPainterPath
 from PyQt5.QtWidgets import QApplication, QFrame, QHBoxLayout, QVBoxLayout, QWidget
 
 if __package__:
@@ -17,6 +17,7 @@ else:
 BASE_DIR = Path(__file__).resolve().parent
 ASSERTS_DIR = BASE_DIR / "asserts"
 QSS_PATH = BASE_DIR / "auth_styles.qss"
+APP_ICON_PATH = ASSERTS_DIR / "icons" / "daily_logo.png"
 
 
 class AuthWindow(QWidget):
@@ -26,13 +27,21 @@ class AuthWindow(QWidget):
         self._load_fonts()
 
         self.setWindowTitle("Daily")
-        self.resize(960, 640)
-        self.setMinimumSize(900, 600)
+        self.resize(960, 740)
+        self.setMinimumSize(960, 740)
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window)
         self.setAttribute(Qt.WA_TranslucentBackground)
+        self.setWindowIcon(_app_icon())
 
         self._build_ui()
-        self._apply_styles()
+        self._apply_styles()    
+        self._center_on_screen()
+
+    def _center_on_screen(self):
+        screen = QApplication.primaryScreen().availableGeometry()
+        frame = self.frameGeometry()
+        frame.moveCenter(screen.center())
+        self.move(frame.topLeft())
 
     def _build_ui(self):
         root = QVBoxLayout(self)
@@ -89,10 +98,24 @@ class AuthWindow(QWidget):
         super().paintEvent(event)
 
 
+def _app_icon() -> QIcon:
+    """Абсолютный путь: на Linux относительный путь к PNG иногда даёт пустой QIcon."""
+    return QIcon(str(APP_ICON_PATH.resolve()))
+
+
 def main():
     app = QApplication(sys.argv)
     app.setApplicationName("Daily")
+    # Иначе setWindowIcon до первого ensure_asserts() — файла ещё нет, иконка не подхватится.
+    ensure_asserts()
+    icon = _app_icon()
+    app.setWindowIcon(icon)
+    try:
+        app.setDesktopFileName("daily")
+    except AttributeError:
+        pass
     window = AuthWindow()
+    window.setWindowIcon(icon)
     window.show()
     sys.exit(app.exec_())
 
