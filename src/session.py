@@ -1,7 +1,7 @@
 from typing import Any, ClassVar
 from pydantic import BaseModel, Field
 from src.back.db.exceptions import AuthError
-
+from src.back.structures import Task
 
 class CurrentUser(BaseModel):
     id: str = Field(..., min_length=1)
@@ -12,7 +12,7 @@ class Me:
     """Глобальное состояние сессии."""
 
     user: ClassVar[CurrentUser | None] = None
-    Tasks: ClassVar[Any] = None
+    Tasks: ClassVar[list[Task] | None] = None
 
     @classmethod
     def set_user(cls, user: CurrentUser | None) -> None:
@@ -32,4 +32,3 @@ class Me:
     @classmethod
     def is_authenticated(cls) -> bool:
         return cls.user is not None
-    
