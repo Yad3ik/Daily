@@ -1,3 +1,4 @@
+from collections.abc import Callable
 from pathlib import Path
 from typing import Optional
 
@@ -7,10 +8,14 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QPushButton,
+    QSizePolicy,
     QStackedWidget,
     QVBoxLayout,
 )
 
+from src.back.to_front.auth import sign_in, sign_up
+
+from .auth_result import error_message_for_response
 from .input_field import AuthInput
 
 
@@ -31,6 +36,7 @@ class FormPage(QFrame):
         super().__init__()
         self.setObjectName("formPage")
         self._require_password_repeat = require_password_repeat
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -53,6 +59,11 @@ class FormPage(QFrame):
         self.submit.setObjectName("mainButton")
         self.submit.setFixedHeight(56)
         self.submit.setCursor(Qt.PointingHandCursor)
+
+        self._api_error = QLabel()
+        self._api_error.setObjectName("fieldError")
+        self._api_error.setWordWrap(True)
+        self._api_error.hide()
 
         layout.addWidget(title_label)
         layout.addSpacing(8)
@@ -100,11 +111,13 @@ class FormPage(QFrame):
             self.repeat_password_input.line_edit.textChanged.connect(
                 self._update_register_password_hints
             )
-            self.submit.clicked.connect(self._on_register_submit)
+            layout.addStretch(1)
+            layout.addWidget(self._api_error)
             layout.addSpacing(36)
             layout.addWidget(self.submit)
         else:
             layout.addStretch(1)
+            layout.addWidget(self._api_error)
             layout.addSpacing(36)
             layout.addWidget(self.submit)
 
@@ -114,9 +127,6 @@ class FormPage(QFrame):
             bottom.setAlignment(Qt.AlignCenter)
             layout.addSpacing(34)
             layout.addWidget(bottom)
-
-        if require_password_repeat:
-            layout.addStretch(1)
 
     def _update_register_password_hints(self):
         if not self._require_password_repeat or self._password_error is None:
@@ -138,7 +148,7 @@ class FormPage(QFrame):
         else:
             self._repeat_error.hide()
 
-    def _register_form_valid(self) -> bool:
+    def register_form_valid(self) -> bool:
         pw = self.password_input.text()
         rep = self.repeat_password_input.text()
         if len(pw) < self.MIN_PASSWORD_LEN:
@@ -156,15 +166,21 @@ class FormPage(QFrame):
         self._repeat_error.hide()
         return True
 
-    def _on_register_submit(self):
-        if not self._register_form_valid():
-            return
+    def show_api_error(self, message: str) -> None:
+        self._api_error.setText(message)
+        self._api_error.show()
+
+    def clear_api_error(self) -> None:
+        self._api_error.clear()
+        self._api_error.hide()
 
 
 class AuthCard(QFrame):
-    def __init__(self, asserts_dir: Path):
+    def __init__(self, asserts_dir: Path, on_auth_success: Callable[[], None]):
         super().__init__()
         self.setObjectName("authCard")
+        self._on_auth_success = on_auth_success
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.MinimumExpanding)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(26, 18, 26, 26)
@@ -194,6 +210,7 @@ class AuthCard(QFrame):
         centered_tabs.addStretch(1)
 
         self.stack = QStackedWidget()
+        self.stack.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         self.login_page = FormPage(
             asserts_dir,
             "С возвращением!",
@@ -216,16 +233,66 @@ class AuthCard(QFrame):
 
         layout.addLayout(centered_tabs)
         layout.addSpacing(44)
-        layout.addWidget(self.stack)
+        layout.addWidget(self.stack, 1)
+        self.login_page.submit.clicked.connect(self._on_login_clicked)
+        self.register_page.submit.clicked.connect(self._on_register_clicked)
+        self._wire_clear_api_error_on_edit()
         self.show_login()
 
+    def _wire_clear_api_error_on_edit(self) -> None:
+        self.login_page.login_input.line_edit.textChanged.connect(self.login_page.clear_api_error)
+        self.login_page.password_input.line_edit.textChanged.connect(self.login_page.clear_api_error)
+        self.register_page.login_input.line_edit.textChanged.connect(self.register_page.clear_api_error)
+        self.register_page.password_input.line_edit.textChanged.connect(
+            self.register_page.clear_api_error
+        )
+        rep = self.register_page.repeat_password_input
+        if rep is not None:
+            rep.line_edit.textChanged.connect(self.register_page.clear_api_error)
+
+    def _clear_api_error(self) -> None:
+        self.login_page.clear_api_error()
+        self.register_page.clear_api_error()
+
+    def _on_login_clicked(self) -> None:
+        login = self.login_page.login_input.text().strip()
+        password = self.login_page.password_input.text()
+        if not login or not password:
+            self.login_page.show_api_error("Введите логин и пароль.")
+            return
+        response = sign_in(login, password)
+        err = error_message_for_response(response)
+        if err is not None:
+            self.login_page.show_api_error(err)
+            return
+        self._clear_api_error()
+        self._on_auth_success()
+
+    def _on_register_clicked(self) -> None:
+        if not self.register_page.register_form_valid():
+            return
+        login = self.register_page.login_input.text().strip()
+        password = self.register_page.password_input.text()
+        if not login:
+            self.register_page.show_api_error("Введите логин.")
+            return
+        response = sign_up(login, password)
+        err = error_message_for_response(response)
+        if err is not None:
+            self.register_page.show_api_error(err)
+            return
+        self._clear_api_error()
+        self._on_auth_success()
+
     def show_login(self):
+        self._clear_api_error()
         self.stack.setCurrentWidget(self.login_page)
         self.login_tab.setProperty("active", True)
         self.register_tab.setProperty("active", False)
         self._refresh_tabs()
 
     def show_register(self):
+        self._clear_api_error()
         self.stack.setCurrentWidget(self.register_page)
         self.login_tab.setProperty("active", False)
         self.register_tab.setProperty("active", True)
