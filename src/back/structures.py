@@ -7,3 +7,7 @@ class Task(BaseModel):
 
     def to_dict(self) -> dict:
         return self.model_dump()
+    
+    @classmethod
+    def from_dict(cls, data: dict) -> 'Task':
+        return cls(id=data["id"], name=data["name"], is_complete=data["is_complete"])

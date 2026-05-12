@@ -32,3 +32,10 @@ class Me:
     @classmethod
     def is_authenticated(cls) -> bool:
         return cls.user is not None
+    
+    @classmethod
+    def to_dict(cls) -> dict:
+        return {
+            "user": cls.user.model_dump() if cls.user else None,
+            "tasks": cls.Tasks if cls.Tasks else None
+        }

@@ -9,12 +9,13 @@ class ToDoList:
         return Config.DB
     
     @staticmethod
-    def add_new(desc: str) -> list[str, str, str, bool]:
+    def add_new(desc: str, is_complete: bool = False) -> list[str, str, str, bool]:
         db = ToDoList._get_db()
 
         res = db.table('tasks').insert({
             'user_id': Me.require_user_id(),
             'name': desc,
+            'is_complete': is_complete,
         }).execute()
 
         return res.data[0]

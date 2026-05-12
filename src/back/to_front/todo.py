@@ -4,12 +4,12 @@ from src.response import Response
 from src.session import Me
 
 def sort_tasks() -> None:
-    Me.Tasks.sort(key=lambda x: x.is_complete, reverse=True)
+    Me.Tasks.sort(key=lambda x: x.is_complete)
 
 def update_me_tasks() -> Response:
     try:
         response = ToDoList.get_all()
-        Me.Tasks = [Task(id=task["id"], name=task["name"], is_complete=task["is_complete"]) for task in response]
+        Me.Tasks = [Task.from_dict(task) for task in response]
         sort_tasks()
         return Response(status_code=200, message="Tasks updated successfully")
     except RuntimeError as e:
@@ -18,7 +18,7 @@ def update_me_tasks() -> Response:
 def add_new_task(name: str, is_complete: bool = False) -> Response:
     try:
         task = ToDoList.add_new(name, is_complete)
-        Me.Tasks.append(Task(id=task["id"], name=task["name"], is_complete=task["is_complete"]))
+        Me.Tasks.append(Task.from_dict(task))
         sort_tasks()
         return Response(status_code=200, message="Task added successfully")
     except RuntimeError as e:
@@ -34,6 +34,14 @@ def delete_task(id: str) -> Response:
 
 def set_complete(id: str, is_complete: bool) -> Response:
     try:
+
+        task = next((task for task in Me.Tasks if task.id == id), None)
+        if task is None:
+            return Response(status_code=404, message="Task not found")
+        
+        if task.is_complete == is_complete:
+            return Response(status_code=200, message="Task already has this status")
+        
         ToDoList.set_complete(id, is_complete)
 
         res = update_me_tasks()
