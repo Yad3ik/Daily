@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QPushButton,
+    QSizePolicy,
     QStackedWidget,
     QVBoxLayout,
 )
@@ -35,6 +36,7 @@ class FormPage(QFrame):
         super().__init__()
         self.setObjectName("formPage")
         self._require_password_repeat = require_password_repeat
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -109,7 +111,7 @@ class FormPage(QFrame):
             self.repeat_password_input.line_edit.textChanged.connect(
                 self._update_register_password_hints
             )
-            layout.addSpacing(24)
+            layout.addStretch(1)
             layout.addWidget(self._api_error)
             layout.addSpacing(36)
             layout.addWidget(self.submit)
@@ -125,9 +127,6 @@ class FormPage(QFrame):
             bottom.setAlignment(Qt.AlignCenter)
             layout.addSpacing(34)
             layout.addWidget(bottom)
-
-        if require_password_repeat:
-            layout.addStretch(1)
 
     def _update_register_password_hints(self):
         if not self._require_password_repeat or self._password_error is None:
@@ -181,6 +180,7 @@ class AuthCard(QFrame):
         super().__init__()
         self.setObjectName("authCard")
         self._on_auth_success = on_auth_success
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.MinimumExpanding)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(26, 18, 26, 26)
@@ -210,6 +210,7 @@ class AuthCard(QFrame):
         centered_tabs.addStretch(1)
 
         self.stack = QStackedWidget()
+        self.stack.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         self.login_page = FormPage(
             asserts_dir,
             "С возвращением!",
@@ -232,7 +233,7 @@ class AuthCard(QFrame):
 
         layout.addLayout(centered_tabs)
         layout.addSpacing(44)
-        layout.addWidget(self.stack)
+        layout.addWidget(self.stack, 1)
         self.login_page.submit.clicked.connect(self._on_login_clicked)
         self.register_page.submit.clicked.connect(self._on_register_clicked)
         self._wire_clear_api_error_on_edit()

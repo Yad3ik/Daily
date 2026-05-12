@@ -6,7 +6,7 @@ from src.session import Me
 class ToDoList:
     @staticmethod
     def _get_db() -> Client:
-        return create_client(Config.DB_URL, Config.DB_API_KEY)
+        return Config.DB
     
     @staticmethod
     def add_new(desc: str) -> list[str, str, str, bool]:

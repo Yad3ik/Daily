@@ -73,7 +73,7 @@ class AuthWindow(QWidget):
         right_layout.setContentsMargins(30, 24, 36, 36)
         right_layout.setSpacing(0)
         self._auth_card = AuthCard(ASSERTS_DIR, self._on_auth_success)
-        right_layout.addWidget(self._auth_card)
+        right_layout.addWidget(self._auth_card, 1)
 
         content.addWidget(LeftPanel(ASSERTS_DIR))
         content.addWidget(right, 1)

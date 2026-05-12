@@ -7,8 +7,7 @@ from src.back.db.exceptions import *
 class Auth:
     @staticmethod
     def _get_db() -> Client:
-        return create_client(Config.DB_URL, Config.DB_API_KEY)
-
+        return Config.DB
     @staticmethod
     def create_new_user(login: str, password: str) -> str:
         db = Auth._get_db()
