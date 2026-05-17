@@ -1,4 +1,4 @@
-from datetime import date, time, timedelta
+from datetime import date, time, timedelta, datetime
 from src.config import TAGS
 from src.back.db.calendar import Calendar
 from src.back.structures import Event
@@ -35,7 +35,7 @@ def add_new_event(
     if tag is not None:
         color = TAGS[tag]
     try:
-        Calendar.add_new(event_date, start, finish, description, tag, color)
+        Calendar.add_new(event_date, datetime.combine(event_date, start), datetime.combine(event_date, finish), description, tag, color)
         return Response(status_code=200, message="Event added successfully")
     except RuntimeError as e:
         return Response(status_code=500, message="Internal server error", exception=str(e))

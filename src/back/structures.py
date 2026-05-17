@@ -33,8 +33,8 @@ class Event(BaseModel):
         return cls(
             id=ev['id'],
             event_date=date.fromisoformat(data['date']),
-            start=datetime.fromisoformat(ev['start']),
-            finish=datetime.fromisoformat(ev['finish']),
+            start=datetime.fromisoformat(ev['start']).time(),
+            finish=datetime.fromisoformat(ev['finish']).time(),
             description=ev['description'],
             tag=ev.get('tag'),
             color=ev.get('color'),
