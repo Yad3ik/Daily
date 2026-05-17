@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, time, datetime
 
 from pydantic import BaseModel, Field
 
@@ -18,8 +18,8 @@ class Task(BaseModel):
 class Event(BaseModel):
     id: str = Field(..., min_length=1)
     event_date: date
-    start: datetime
-    finish: datetime
+    start: time
+    finish: time
     description: str = Field(..., min_length=1)
     tag: str | None = None
     color: str | None = None

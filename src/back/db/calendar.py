@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, time
 from supabase import Client
 from src.config import Config
 from src.back.db.exceptions import *
@@ -28,8 +28,8 @@ class Calendar:
     @staticmethod
     def add_new(
         event_date: date,
-        start: datetime,
-        finish: datetime,
+        start: time,
+        finish: time,
         description: str,
         tag: str | None = None,
         color: str | None = None,

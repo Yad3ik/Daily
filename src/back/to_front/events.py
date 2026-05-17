@@ -1,4 +1,4 @@
-from datetime import date, datetime, timedelta
+from datetime import date, time, timedelta
 from src.config import TAGS
 from src.back.db.calendar import Calendar
 from src.back.structures import Event
@@ -27,8 +27,8 @@ def get_events(date_start: date, date_finish: date) -> list[list[Event]]:
 
 def add_new_event(
     event_date: date,
-    start: datetime,
-    finish: datetime,
+    start: time,
+    finish: time,
     description: str,
     tag: str | None = None,
     color: str | None = None) -> Response:
