@@ -25,7 +25,7 @@ def sign_in(login: str, password: str) -> Response:
         user_id = Auth.login_user(login, password)
         Me.set_user(CurrentUser(id=user_id, login=login))
 
-        res = update_me_tasks()
+        res = _update_me_tasks()
         if res.status_code != 200:
             return res
         
