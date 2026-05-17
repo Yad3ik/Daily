@@ -1,4 +1,4 @@
-from supabase import Client, create_client
+from supabase import Client
 from src.config import Config
 from src.back.db.exceptions import *
 from src.session import Me
@@ -9,7 +9,7 @@ class ToDoList:
         return Config.DB
     
     @staticmethod
-    def add_new(desc: str, is_complete: bool = False) -> list[str, str, str, bool]:
+    def add_new(desc: str, is_complete: bool = False) -> dict:
         db = ToDoList._get_db()
 
         res = db.table('tasks').insert({
@@ -38,6 +38,6 @@ class ToDoList:
     def get_all() -> list[dict]:
         db = ToDoList._get_db()
 
-        res = db.table('tasks').select('*').eq('user_id', Me.require_user_id()).execute()
+        res = db.table('tasks').select('*').eq('user_id', Me.require_user_id()).order('created_at', desc=True).execute()
 
         return res.data

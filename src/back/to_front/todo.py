@@ -3,14 +3,16 @@ from src.back.structures import Task
 from src.response import Response
 from src.session import Me
 
-def sort_tasks() -> None:
+def _sort_tasks() -> None:
+    if Me.Tasks is None:
+        return
     Me.Tasks.sort(key=lambda x: x.is_complete)
 
-def update_me_tasks() -> Response:
+def _update_tasks() -> Response:
     try:
         response = ToDoList.get_all()
         Me.Tasks = [Task.from_dict(task) for task in response]
-        sort_tasks()
+        _sort_tasks()
         return Response(status_code=200, message="Tasks updated successfully")
     except RuntimeError as e:
         return Response(status_code=500, message="Internal server error", exception=str(e))
@@ -18,8 +20,8 @@ def update_me_tasks() -> Response:
 def add_new_task(name: str, is_complete: bool = False) -> Response:
     try:
         task = ToDoList.add_new(name, is_complete)
-        Me.Tasks.append(Task.from_dict(task))
-        sort_tasks()
+        Me.Tasks = [Task.from_dict(task)] + Me.Tasks
+        _sort_tasks()
         return Response(status_code=200, message="Task added successfully")
     except RuntimeError as e:
         return Response(status_code=500, message="Internal server error", exception=str(e))
@@ -44,7 +46,7 @@ def set_complete(id: str, is_complete: bool) -> Response:
         
         ToDoList.set_complete(id, is_complete)
 
-        res = update_me_tasks()
+        res = _update_tasks()
         if res.status_code != 200:
             return res
 

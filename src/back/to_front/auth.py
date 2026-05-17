@@ -2,12 +2,16 @@ from src.back.db.auth import Auth
 from src.back.db.exceptions import *
 from src.session import Me, CurrentUser
 from src.response import Response
-from src.back.to_front.todo import update_me_tasks
+from src.back.to_front.todo import _update_me_tasks
 
 def sign_up(login: str, password: str) -> Response:
     try:
         user_id = Auth.create_new_user(login, password)
         Me.set_user(CurrentUser(id=user_id, login=login))
+        res = _update_me_tasks()
+        if res.status_code != 200:
+            return res
+        
         return Response(status_code=200, message="User created successfully")
     except InvalidData as e:
         return Response(status_code=400, message="duplicate key", exception=str(e))
@@ -21,7 +25,7 @@ def sign_in(login: str, password: str) -> Response:
         user_id = Auth.login_user(login, password)
         Me.set_user(CurrentUser(id=user_id, login=login))
 
-        res = update_me_tasks()
+        res = _update_me_tasks()
         if res.status_code != 200:
             return res
         
@@ -41,7 +45,7 @@ def delete_user(id: str | None = None) -> Response: # id is optional for testing
     try:
         if id is None:
             id = Me.require_user_id()
-        Auth.delete_user(id)
+        Auth._delete_user(id)
         Me.clear()
         return Response(status_code=200, message="User deleted successfully")
     except AuthError as e:
