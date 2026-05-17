@@ -4,6 +4,8 @@ from src.response import Response
 from src.session import Me
 
 def _sort_tasks() -> None:
+    if Me.Tasks is None:
+        return
     Me.Tasks.sort(key=lambda x: x.is_complete)
 
 def _update_tasks() -> Response:
