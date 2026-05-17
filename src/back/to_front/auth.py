@@ -8,6 +8,10 @@ def sign_up(login: str, password: str) -> Response:
     try:
         user_id = Auth.create_new_user(login, password)
         Me.set_user(CurrentUser(id=user_id, login=login))
+        res = update_me_tasks()
+        if res.status_code != 200:
+            return res
+        
         return Response(status_code=200, message="User created successfully")
     except InvalidData as e:
         return Response(status_code=400, message="duplicate key", exception=str(e))
