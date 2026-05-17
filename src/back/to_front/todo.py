@@ -8,6 +8,10 @@ def _sort_tasks() -> None:
         return
     Me.Tasks.sort(key=lambda x: x.is_complete)
 
+def update_me_tasks() -> Response:
+    return _update_tasks()
+
+
 def _update_tasks() -> Response:
     try:
         response = ToDoList.get_all()
