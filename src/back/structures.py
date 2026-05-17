@@ -1,3 +1,5 @@
+from datetime import date, datetime
+
 from pydantic import BaseModel, Field
 
 class Task(BaseModel):
@@ -11,3 +13,29 @@ class Task(BaseModel):
     @classmethod
     def from_dict(cls, data: dict) -> 'Task':
         return cls(id=data["id"], name=data["name"], is_complete=data["is_complete"])
+
+
+class Event(BaseModel):
+    id: str = Field(..., min_length=1)
+    event_date: date
+    start: datetime
+    finish: datetime
+    description: str = Field(..., min_length=1)
+    tag: str | None = None
+    color: str | None = None
+
+    def to_dict(self) -> dict:
+        return self.model_dump()
+
+    @classmethod
+    def from_dict(cls, data: dict) -> 'Event':
+        ev = data['events']
+        return cls(
+            id=ev['id'],
+            event_date=date.fromisoformat(data['date']),
+            start=datetime.fromisoformat(ev['start']),
+            finish=datetime.fromisoformat(ev['finish']),
+            description=ev['description'],
+            tag=ev.get('tag'),
+            color=ev.get('color'),
+        )
