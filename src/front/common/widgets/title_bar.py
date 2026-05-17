@@ -1,17 +1,19 @@
+"""Frameless window title bar (shared between auth and planner)."""
+
 from PyQt5.QtCore import QRectF, Qt
 from PyQt5.QtGui import QColor, QPainter, QPen
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton
 
 
 class WindowControlButton(QPushButton):
-    def __init__(self, kind: str):
+    def __init__(self, kind: str) -> None:
         super().__init__()
         self.kind = kind
         self.setObjectName("titleButton")
         self.setFixedSize(32, 30)
         self.setCursor(Qt.PointingHandCursor)
 
-    def paintEvent(self, event):
+    def paintEvent(self, event) -> None:
         super().paintEvent(event)
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
@@ -35,7 +37,7 @@ class WindowControlButton(QPushButton):
 
 
 class TitleBar(QFrame):
-    def __init__(self, window, title_markup: str | None = None):
+    def __init__(self, window, title_markup: str | None = None) -> None:
         super().__init__()
         self.window = window
         self.drag_position = None
@@ -72,16 +74,16 @@ class TitleBar(QFrame):
         layout.addWidget(maximize)
         layout.addWidget(close)
 
-    def resizeEvent(self, event):
+    def resizeEvent(self, event) -> None:
         self.title.setGeometry(0, 0, self.width(), self.height())
         super().resizeEvent(event)
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event) -> None:
         if event.button() == Qt.LeftButton:
             self.drag_position = event.globalPos() - self.window.frameGeometry().topLeft()
             event.accept()
 
-    def mouseMoveEvent(self, event):
+    def mouseMoveEvent(self, event) -> None:
         if (
             self.drag_position
             and event.buttons() & Qt.LeftButton
@@ -90,6 +92,6 @@ class TitleBar(QFrame):
             self.window.move(event.globalPos() - self.drag_position)
             event.accept()
 
-    def mouseReleaseEvent(self, event):
+    def mouseReleaseEvent(self, event) -> None:
         self.drag_position = None
         super().mouseReleaseEvent(event)

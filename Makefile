@@ -30,3 +30,6 @@ test:
 
 up:
 	$(PY) src/front/auth_window/auth_window.py
+
+planner:
+	$(PY) -m src.front.planner_window

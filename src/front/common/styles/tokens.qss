@@ -1,0 +1,11 @@
+/* Shared color tokens for auth and planner windows. */
+
+/* Backgrounds */
+/* #15131a — window surface */
+/* #0f0e14 — title bar */
+/* #191720 — sidebar gradient start */
+
+/* Accent */
+/* #F03F83 — primary pink */
+/* #f7f2f5 — primary text */
+/* #928b96 — muted text */

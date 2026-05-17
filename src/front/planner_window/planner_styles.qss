@@ -1,0 +1,198 @@
+QWidget {
+  color: #f7f2f5;
+  font-family: "Noto Sans";
+  font-size: 11px;
+}
+
+QFrame#plannerSidebar {
+  background: transparent;
+  border: none;
+  border-bottom-left-radius: 11px;
+}
+
+QLabel#plannerBrand {
+  font-family: "Noto Serif";
+  font-size: 26px;
+  font-weight: 800;
+  color: #F6F0F4;
+}
+
+QLabel#sectionCaption {
+  color: #8f8798;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+QFrame#viewTab {
+  background-color: rgba(20, 18, 28, 120);
+  border: 1px solid transparent;
+  border-radius: 14px;
+}
+
+QFrame#viewTab[active="true"] {
+  background-color: rgba(36, 33, 48, 220);
+  border: 1px solid rgba(240, 63, 131, 90);
+}
+
+QLabel#viewTabLabel {
+  color: #F6F0F4;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+QFrame#plannerContent {
+  background: qlineargradient(
+    x1: 0, y1: 0, x2: 1, y2: 1,
+    stop: 0 #121018,
+    stop: 1 #0e0d13
+  );
+  border: none;
+  border-bottom-right-radius: 11px;
+}
+
+QLabel#tasksTitle {
+  font-family: "Noto Serif";
+  font-size: 32px;
+  font-weight: 700;
+  color: #F6F0F4;
+}
+
+QLabel#countBadge {
+  background-color: rgba(240, 63, 131, 55);
+  color: #F03F83;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 2px 10px;
+}
+
+QFrame#taskInputWrap {
+  background-color: rgba(22, 20, 28, 230);
+  border: 1px dashed #3a3442;
+  border-radius: 14px;
+}
+
+QLineEdit#taskInputField {
+  background: transparent;
+  border: none;
+  color: #F6F0F4;
+  font-size: 14px;
+  selection-background-color: #F03F83;
+}
+
+QPushButton#enterChip {
+  background-color: #24212b;
+  border: 1px solid #3a3442;
+  border-radius: 6px;
+  color: #9c95a1;
+  font-size: 11px;
+  padding: 4px 10px;
+}
+
+QFrame#progressRing {
+  background: transparent;
+}
+
+QLabel#progressText {
+  color: #F6F0F4;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+QPushButton#filterChip {
+  background: rgba(22, 20, 28, 200);
+  border: 1px solid #322d39;
+  border-radius: 10px;
+  color: #9c95a1;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 16px;
+}
+
+QPushButton#filterChip:hover {
+  color: #e8e2ec;
+}
+
+QPushButton#filterChip[active="true"] {
+  border-color: rgba(240, 63, 131, 120);
+  color: #F6F0F4;
+}
+
+QLabel#sectionTitle {
+  color: #6f6875;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+QLabel#sectionBadge {
+  background-color: #24212b;
+  color: #9c95a1;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+}
+
+QFrame#taskRow {
+  background-color: rgba(22, 20, 28, 200);
+  border: 1px solid #2a2530;
+  border-radius: 12px;
+}
+
+QFrame#taskRow:hover {
+  border-color: #3d3648;
+}
+
+QLabel#taskRowLabel {
+  color: #F6F0F4;
+  font-size: 14px;
+}
+
+QLabel#taskRowLabel[completed="true"] {
+  color: #6f6875;
+  text-decoration: line-through;
+}
+
+QPushButton#taskCheck {
+  background: transparent;
+  border: 2px solid #4a4354;
+  border-radius: 11px;
+}
+
+QPushButton#taskCheck[checked="true"] {
+  background-color: #F03F83;
+  border-color: #F03F83;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+QPushButton#taskDelete {
+  background: transparent;
+  border: none;
+  color: #ff5c7a;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+QPushButton#taskDelete:hover {
+  color: #ff8aa3;
+}
+
+QScrollArea {
+  background: transparent;
+  border: none;
+}
+
+QScrollBar:vertical {
+  background: transparent;
+  width: 8px;
+}
+
+QScrollBar::handle:vertical {
+  background: #3a3442;
+  border-radius: 4px;
+  min-height: 24px;
+}

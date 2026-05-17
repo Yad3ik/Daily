@@ -10,11 +10,14 @@ from PyQt5.QtGui import QColor, QFont, QFontDatabase, QIcon, QPainter, QPainterP
 from PyQt5.QtWidgets import QApplication, QFrame, QHBoxLayout, QVBoxLayout, QWidget
 
 if __package__:
-    from .planner_window import PlannerWindow
+    from ..planner_window import PlannerWindow
     from .widgets import AuthCard, LeftPanel, TitleBar
     from .widgets.asset_builder import ensure_asserts
 else:
-    sys.path.append(str(Path(__file__).resolve().parent))
+    _auth_dir = Path(__file__).resolve().parent
+    _front_dir = _auth_dir.parent
+    sys.path.insert(0, str(_front_dir))
+    sys.path.insert(0, str(_auth_dir))
     from planner_window import PlannerWindow
     from widgets import AuthCard, LeftPanel, TitleBar
     from widgets.asset_builder import ensure_asserts
