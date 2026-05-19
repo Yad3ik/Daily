@@ -1,10 +1,15 @@
+"""Title bar окна авторизации (своя копия виджетов)."""
+
 from PyQt5.QtCore import QRectF, Qt
 from PyQt5.QtGui import QColor, QPainter, QPen
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton
 
 
 class WindowControlButton(QPushButton):
+    """Кнопка свернуть / развернуть / закрыть."""
+
     def __init__(self, kind: str):
+        """kind: minimize | maximize | close."""
         super().__init__()
         self.kind = kind
         self.setObjectName("titleButton")
@@ -12,6 +17,7 @@ class WindowControlButton(QPushButton):
         self.setCursor(Qt.PointingHandCursor)
 
     def paintEvent(self, event):
+        """Рисует пиктограмму по kind."""
         super().paintEvent(event)
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
@@ -35,7 +41,10 @@ class WindowControlButton(QPushButton):
 
 
 class TitleBar(QFrame):
+    """Перетаскивание окна и кнопки управления."""
+
     def __init__(self, window, title_markup: str | None = None):
+        """window — родитель с toggle_maximized и close."""
         super().__init__()
         self.window = window
         self.drag_position = None
@@ -73,15 +82,18 @@ class TitleBar(QFrame):
         layout.addWidget(close)
 
     def resizeEvent(self, event):
+        """Центрирует заголовок на всю ширину."""
         self.title.setGeometry(0, 0, self.width(), self.height())
         super().resizeEvent(event)
 
     def mousePressEvent(self, event):
+        """Запоминает точку для drag."""
         if event.button() == Qt.LeftButton:
             self.drag_position = event.globalPos() - self.window.frameGeometry().topLeft()
             event.accept()
 
     def mouseMoveEvent(self, event):
+        """Перемещает окно за title bar."""
         if (
             self.drag_position
             and event.buttons() & Qt.LeftButton
@@ -91,5 +103,6 @@ class TitleBar(QFrame):
             event.accept()
 
     def mouseReleaseEvent(self, event):
+        """Сбрасывает drag."""
         self.drag_position = None
         super().mouseReleaseEvent(event)

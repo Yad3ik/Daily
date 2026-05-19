@@ -1,3 +1,5 @@
+"""Шапка недели: диапазон дат и кнопка «+ Событие»."""
+
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton
 
@@ -10,6 +12,7 @@ _MONTHS = (
 
 
 def format_week_range(state: CalendarState) -> str:
+    """Текст диапазона дат недели для подписи в шапке."""
     days = state.week_days
     start, end = days[0], days[-1]
     if start.month == end.month:
@@ -21,10 +24,13 @@ def format_week_range(state: CalendarState) -> str:
 
 
 class WeekHeader(QFrame):
+    """Навигация по неделям и кнопка добавления события."""
+
     week_changed = pyqtSignal()
     add_event_requested = pyqtSignal()
 
     def __init__(self, state: CalendarState) -> None:
+        """Стрелки, подпись недели и «+ Событие»."""
         super().__init__()
         self.setObjectName("weekHeaderBar")
         self._state = state
@@ -69,9 +75,11 @@ class WeekHeader(QFrame):
         self.refresh()
 
     def _shift(self, weeks: int) -> None:
+        """Сдвигает неделю и уведомляет подписчиков."""
         self._state.shift_week(weeks)
         self.refresh()
         self.week_changed.emit()
 
     def refresh(self) -> None:
+        """Обновляет подпись диапазона дат."""
         self._range_label.setText(format_week_range(self._state))

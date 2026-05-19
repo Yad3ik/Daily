@@ -1,1 +1,1 @@
-"""Task UI components."""
+"""Пакет виджетов планировщика: подпакеты calendar и tasks."""

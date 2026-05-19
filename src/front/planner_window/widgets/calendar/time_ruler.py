@@ -1,3 +1,5 @@
+"""Левая шкала часов и метка текущего времени."""
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QFont, QPainter, QPen
 from PyQt5.QtWidgets import QFrame, QLabel, QVBoxLayout
@@ -6,7 +8,10 @@ from .event_block import GRID_HEIGHT, HOUR_HEIGHT, HOURS_IN_DAY
 
 
 class TimeRuler(QFrame):
+    """Подписи 00:00–23:00 и розовая плашка «сейчас»."""
+
     def __init__(self) -> None:
+        """Создаёт 24 метки часов."""
         super().__init__()
         self.setObjectName("timeRuler")
         self.setFixedWidth(64)
@@ -26,6 +31,7 @@ class TimeRuler(QFrame):
             self._hour_labels.append(lbl)
 
     def paintEvent(self, event) -> None:
+        """Дорисовывает текущее время поверх меток."""
         super().paintEvent(event)
         from datetime import datetime
 

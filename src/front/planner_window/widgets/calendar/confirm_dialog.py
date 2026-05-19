@@ -1,3 +1,5 @@
+"""Диалог подтверждения Да/Нет."""
+
 from pathlib import Path
 
 from PyQt5.QtCore import QRectF, Qt
@@ -17,9 +19,10 @@ _PLANNER_QSS = _PLANNER_DIR / "planner_styles.qss"
 
 
 class ConfirmDialog(QDialog):
-    """Small frameless yes/no dialog in app style."""
+    """Компактный диалог Да/Нет в стиле приложения."""
 
     def __init__(self, message: str, parent=None) -> None:
+        """Центрируется относительно parent при наличии."""
         super().__init__(parent)
         self.setObjectName("confirmDialog")
         self.setModal(True)
@@ -75,6 +78,7 @@ class ConfirmDialog(QDialog):
             )
 
     def paintEvent(self, event) -> None:
+        """Скруглённый фон диалога."""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
         rect = QRectF(self.rect()).adjusted(0.5, 0.5, -0.5, -0.5)

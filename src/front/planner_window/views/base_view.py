@@ -1,8 +1,10 @@
+"""Базовый класс экранов планировщика."""
+
 from PyQt5.QtWidgets import QWidget
 
 
 class BaseView(QWidget):
-    """Base class for planner content views."""
+    """Базовый вид контента планировщика (календарь / задачи)."""
 
     def refresh(self) -> None:
-        """Reload data from session / backend."""
+        """Перезагружает данные из сессии и бэкенда."""

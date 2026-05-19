@@ -1,15 +1,23 @@
+/*
+ * auth_styles.qss — стили окна входа и регистрации (AuthWindow).
+ * Подключается в auth_window.py; часть правил переиспользуется в planner (склейка QSS).
+ */
+
+/* --- Базовые настройки приложения --- */
 QWidget {
   color: #f7f2f5;
   font-family: "Noto Sans";
   font-size: 11px;
 }
 
+/* --- Оболочка окна (скругление, рамка) --- */
 QFrame#windowSurface {
   background-color: #15131a;
   border: 1px solid #393443;
   border-radius: 11px;
 }
 
+/* --- Верхняя панель: заголовок, версия, кнопки свернуть/развернуть/закрыть --- */
 QFrame#titleBar {
   background-color: #0f0e14;
   border: none;
@@ -41,6 +49,7 @@ QPushButton#titleButton:hover {
   border-radius: 6px;
 }
 
+/* --- Левая колонка: бренд, слоган, иллюстрация --- */
 QFrame#leftPanel {
   background: qlineargradient(
     x1: 0, y1: 0, x2: 1, y2: 1,
@@ -51,6 +60,7 @@ QFrame#leftPanel {
   border: none;
 }
 
+/* --- Правая колонка: форма входа/регистрации --- */
 QFrame#rightPanel {
   background: qlineargradient(
     x1: 0, y1: 0, x2: 1, y2: 1,
@@ -84,6 +94,7 @@ QLabel#description {
   font-size: 12px;
 }
 
+/* --- Демо-карточка «Сегодня» на левой панели --- */
 QFrame#scheduleCard {
   background-color: rgba(17, 15, 22, 236);
   border: 1px solid #2e2934;
@@ -101,6 +112,7 @@ QLabel#pinkDot {
   font-size: 14px;
 }
 
+/* --- Строки демо-событий в scheduleCard --- */
 QFrame#eventRow_pink,
 QFrame#eventRow_purple {
   background-color: #201d27;
@@ -142,6 +154,7 @@ QLabel#tag_purple {
   font-weight: 700;
 }
 
+/* --- Карточка auth: вкладки Войти / Регистрация --- */
 QFrame#authCard {
   background-color: rgba(28, 25, 35, 218);
   border: none;
@@ -175,6 +188,7 @@ QPushButton[active="false"]:hover {
   color: #d8d2dc;
 }
 
+/* --- Страницы формы (FormPage): заголовки и подписи полей --- */
 QLabel#formTitle {
   font-family: "Liberation Sans";
   color: #F6F0F4;
@@ -199,6 +213,7 @@ QLabel#fieldError {
   font-weight: 600;
 }
 
+/* --- Поле ввода AuthInput (иконка + line edit) --- */
 QFrame#inputFrame {
   background-color: #1b1921;
   border: 1px solid #322d39;
@@ -227,6 +242,7 @@ QPushButton#eyeButton:hover {
   border-radius: 6px;
 }
 
+/* --- Основная кнопка «Войти» / «Создать аккаунт» --- */
 QPushButton#mainButton {
   background-color: #F03F83;
   color: #F6F0F4;
@@ -242,9 +258,4 @@ QPushButton#mainButton:hover {
 
 QPushButton#mainButton:pressed {
   background-color: #C72F6A;
-}
-
-QLabel#bottomText {
-  color: #aaa3ad;
-  font-size: 14px;
 }

@@ -1,1 +1,1 @@
-# Front-end package
+"""Пакет UI приложения Daily (PyQt5)."""

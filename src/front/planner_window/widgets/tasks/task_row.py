@@ -1,3 +1,5 @@
+"""Строка одной задачи в списке."""
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton
 
@@ -8,7 +10,10 @@ from .network_errors import NETWORK_ERRORS
 
 
 class TaskRow(QFrame):
+    """Чекбокс, название и кнопка удаления при наведении."""
+
     def __init__(self, task: Task, on_changed) -> None:
+        """on_changed — callback после toggle/delete."""
         super().__init__()
         self.setObjectName("taskRow")
         self._task = task
@@ -44,6 +49,7 @@ class TaskRow(QFrame):
         layout.addWidget(self._delete)
 
     def _toggle(self) -> None:
+        """Переключает is_complete через API."""
         try:
             res = set_complete(self._task.id, not self._task.is_complete)
         except NETWORK_ERRORS:
@@ -52,6 +58,7 @@ class TaskRow(QFrame):
             self._on_changed()
 
     def _remove(self) -> None:
+        """Удаляет задачу через API."""
         try:
             res = delete_task(self._task.id)
         except NETWORK_ERRORS:
@@ -60,9 +67,11 @@ class TaskRow(QFrame):
             self._on_changed()
 
     def enterEvent(self, event) -> None:
+        """Показывает кнопку удаления."""
         self._delete.show()
         super().enterEvent(event)
 
     def leaveEvent(self, event) -> None:
+        """Скрывает кнопку удаления."""
         self._delete.hide()
         super().leaveEvent(event)

@@ -1,3 +1,5 @@
+"""Переключатель «Календарь» / «Задачи» в сайдбаре."""
+
 from pathlib import Path
 
 from PyQt5.QtCore import Qt, pyqtSignal
@@ -8,7 +10,10 @@ _ICONS = Path(__file__).resolve().parents[1] / "asserts" / "icons"
 
 
 class _NavIcon(QLabel):
+    """PNG-иконка вкладки (обычная / активная)."""
+
     def __init__(self, name: str, *, active: bool = False, size: int = 24) -> None:
+        """Загружает иконку calendar или tasks."""
         super().__init__()
         self._name = name
         self._active = active
@@ -18,10 +23,12 @@ class _NavIcon(QLabel):
         self._apply()
 
     def set_active(self, active: bool) -> None:
+        """Переключает активную иконку."""
         self._active = active
         self._apply()
 
     def _apply(self) -> None:
+        """Подставляет pixmap по состоянию active."""
         if self._name == "calendar":
             path = _ICONS / ("calendar_active.png" if self._active else "calendar.png")
         else:
@@ -39,9 +46,12 @@ class _NavIcon(QLabel):
 
 
 class ViewSwitcher(QFrame):
+    """Две кнопки навигации между видами планировщика."""
+
     view_changed = pyqtSignal(str)
 
     def __init__(self) -> None:
+        """Создаёт кнопки «Календарь» и «Задачи»."""
         super().__init__()
         self.setObjectName("viewSwitcherWrap")
         self._buttons: dict[str, QPushButton] = {}
@@ -80,10 +90,12 @@ class ViewSwitcher(QFrame):
         self.set_active("calendar")
 
     def _select(self, key: str) -> None:
+        """Выбирает вид и шлёт view_changed."""
         self.set_active(key)
         self.view_changed.emit(key)
 
     def set_active(self, key: str) -> None:
+        """Обновляет QSS и иконки без эмита сигнала."""
         for name, btn in self._buttons.items():
             active = name == key
             flag = "true" if active else "false"

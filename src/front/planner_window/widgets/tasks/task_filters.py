@@ -1,9 +1,14 @@
+"""Чипы фильтра задач: все / активные / выполненные."""
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QPushButton
 
 
 class TaskFilters(QFrame):
+    """Три кнопки-фильтра с подсветкой активной."""
+
     def __init__(self, on_changed) -> None:
+        """on_changed(key) при смене фильтра."""
         super().__init__()
         self.setObjectName("taskFilters")
         self._on_changed = on_changed
@@ -25,6 +30,7 @@ class TaskFilters(QFrame):
         self._select("all", notify=False)
 
     def _select(self, key: str, notify: bool = True) -> None:
+        """Активирует chip и опционально вызывает on_changed."""
         for name, btn in self._buttons.items():
             btn.setProperty("active", "true" if name == key else "false")
             btn.style().unpolish(btn)

@@ -1,3 +1,5 @@
+"""Поле ввода новой задачи."""
+
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QLineEdit, QPushButton, QVBoxLayout
 
@@ -7,7 +9,10 @@ from .network_errors import NETWORK_ERRORS
 
 
 class TaskInput(QFrame):
+    """Строка «+», поле и кнопка «Добавить»."""
+
     def __init__(self, on_added) -> None:
+        """on_added вызывается после успешного add_new_task."""
         super().__init__()
         self.setObjectName("taskInputWrap")
         self._on_added = on_added
@@ -29,8 +34,6 @@ class TaskInput(QFrame):
         self._default_placeholder = "Что хочешь сделать?"
         self._field.setPlaceholderText(self._default_placeholder)
         self._field.returnPressed.connect(self._submit)
-        hint = QLabel("Введи задачу и нажми Enter")
-        hint.setObjectName("taskInputHint")
         field_wrap.addWidget(self._field)
 
         add_btn = QPushButton("Добавить")
@@ -44,6 +47,7 @@ class TaskInput(QFrame):
         layout.addWidget(add_btn)
 
     def _submit(self) -> None:
+        """Отправляет задачу на сервер; при ошибке сети — placeholder."""
         text = self._field.text().strip()
         if not text:
             return
@@ -59,8 +63,10 @@ class TaskInput(QFrame):
         self._on_added()
 
     def _show_error(self, message: str) -> None:
+        """Временно показывает ошибку в placeholder."""
         self._field.setPlaceholderText(message)
         QTimer.singleShot(3000, self._reset_placeholder)
 
     def _reset_placeholder(self) -> None:
+        """Возвращает стандартный placeholder."""
         self._field.setPlaceholderText(self._default_placeholder)

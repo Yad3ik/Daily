@@ -1,9 +1,14 @@
+"""Заголовок вкладки задач."""
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel
 
 
 class TasksHeader(QFrame):
+    """«Задачи» и бейдж с общим числом."""
+
     def __init__(self) -> None:
+        """Заголовок «Задачи» и бейдж счётчика."""
         super().__init__()
         self.setObjectName("tasksHeader")
         layout = QHBoxLayout(self)
@@ -23,5 +28,6 @@ class TasksHeader(QFrame):
         layout.addStretch(1)
 
     def set_count(self, count: int) -> None:
+        """Обновляет бейдж; скрывает при count == 0."""
         self._badge.setText(str(count))
         self._badge.setVisible(count > 0)

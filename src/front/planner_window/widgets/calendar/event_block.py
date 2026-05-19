@@ -1,3 +1,5 @@
+"""Блок одного события на недельной сетке."""
+
 from datetime import datetime
 
 from PyQt5.QtCore import Qt, pyqtSignal
@@ -12,6 +14,7 @@ GRID_HEIGHT = HOUR_HEIGHT * HOURS_IN_DAY
 
 
 def _tag_rgba(hex_color: str, alpha: float = 0.22) -> str:
+    """HEX цвет тега в rgba для полупрозрачного фона."""
     value = hex_color.lstrip("#")
     if len(value) != 6:
         return f"rgba(142, 135, 148, {alpha})"
@@ -20,9 +23,12 @@ def _tag_rgba(hex_color: str, alpha: float = 0.22) -> str:
 
 
 class EventBlock(QFrame):
+    """Карточка события: время, название, тег."""
+
     clicked = pyqtSignal(object)
 
     def __init__(self, event: Event) -> None:
+        """Стилизует блок цветом тега."""
         super().__init__()
         self._event = event
         self.setCursor(Qt.PointingHandCursor)
@@ -68,6 +74,7 @@ class EventBlock(QFrame):
         layout.addWidget(self._tag_lbl, 0, Qt.AlignBottom)
 
     def mouseReleaseEvent(self, event) -> None:
+        """Клик ЛКМ — сигнал clicked с Event."""
         if event.button() == Qt.LeftButton:
             self.clicked.emit(self._event)
             event.accept()
@@ -75,6 +82,7 @@ class EventBlock(QFrame):
         super().mouseReleaseEvent(event)
 
     def resizeEvent(self, event) -> None:
+        """В узком блоке обрезает заголовок в одну строку."""
         super().resizeEvent(event)
         compact = self.height() < 56
         self._title_lbl.setWordWrap(not compact)
@@ -90,11 +98,13 @@ class EventBlock(QFrame):
 
     @staticmethod
     def y_for_time(dt: datetime) -> int:
+        """Вертикальная позиция начала по времени."""
         minutes = dt.hour * 60 + dt.minute
         return int(minutes / 60 * HOUR_HEIGHT)
 
     @staticmethod
     def height_for_event(event: Event) -> int:
+        """Высота блока по длительности события."""
         start = event.start.hour * 60 + event.start.minute
         end = event.finish.hour * 60 + event.finish.minute
         if end <= start:

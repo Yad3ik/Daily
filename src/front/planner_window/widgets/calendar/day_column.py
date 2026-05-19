@@ -1,3 +1,5 @@
+"""Заголовок дня и колонка с блоками событий."""
+
 from collections.abc import Callable
 from datetime import date
 
@@ -13,7 +15,10 @@ _DAY_NAMES = ("ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС")
 
 
 class DayHeaderCell(QFrame):
+    """Ячейка шапки: день недели и число."""
+
     def __init__(self, day: date) -> None:
+        """Подпись ПН–ВС и номер дня."""
         super().__init__()
         self.setObjectName("dayHeaderCell")
         layout = QVBoxLayout(self)
@@ -34,6 +39,7 @@ class DayHeaderCell(QFrame):
         self.set_day(day)
 
     def set_day(self, day: date) -> None:
+        """Обновляет подписи и подсветку «сегодня»."""
         self._name.setText(_DAY_NAMES[day.weekday()])
         self._num.setText(str(day.day))
         today = date.today()
@@ -43,7 +49,10 @@ class DayHeaderCell(QFrame):
 
 
 class DayColumn(QFrame):
+    """Вертикальная колонка одного дня с сеткой часов."""
+
     def __init__(self, on_event_clicked: Callable[[Event], None] | None = None) -> None:
+        """Принимает callback клика по событию."""
         super().__init__()
         self.setObjectName("dayColumn")
         self.setMinimumHeight(GRID_HEIGHT)
@@ -53,11 +62,13 @@ class DayColumn(QFrame):
         self._blocks: list[EventBlock] = []
 
     def set_day(self, day: date, events: list[Event]) -> None:
+        """Назначает день и пересобирает EventBlock."""
         self._day = day
         self._events = list(events)
         self._rebuild_blocks()
 
     def _rebuild_blocks(self) -> None:
+        """Удаляет старые блоки и создаёт новые по events."""
         for block in self._blocks:
             block.deleteLater()
         self._blocks.clear()
@@ -70,6 +81,7 @@ class DayColumn(QFrame):
         self._layout_blocks()
 
     def _layout_blocks(self) -> None:
+        """Расставляет блоки по Y и высоте из EventBlock."""
         width = max(48, self.width() - 10)
         for event, block in zip(self._events, self._blocks):
             block.setGeometry(
@@ -81,11 +93,13 @@ class DayColumn(QFrame):
             block.show()
 
     def resizeEvent(self, event) -> None:
+        """Перелайаут блоков при изменении ширины."""
         super().resizeEvent(event)
         if self._blocks:
             self._layout_blocks()
 
     def paintEvent(self, event) -> None:
+        """Горизонтальные линии сетки по часам."""
         super().paintEvent(event)
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)

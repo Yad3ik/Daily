@@ -1,3 +1,5 @@
+"""Диалог создания события (безрамочный, с тегами)."""
+
 from datetime import date, datetime, time
 from pathlib import Path
 
@@ -27,7 +29,10 @@ _PLANNER_QSS = _PLANNER_DIR / "planner_styles.qss"
 
 
 class _TagChip(QPushButton):
+    """Переключаемая кнопка-тег с цветной рамкой."""
+
     def __init__(self, name: str, color: str, group: QButtonGroup) -> None:
+        """Добавляется в QButtonGroup как checkable chip."""
         super().__init__(name)
         self._tag_name = name
         self._color = color
@@ -38,6 +43,7 @@ class _TagChip(QPushButton):
         self.toggled.connect(self._on_toggled)
 
     def _on_toggled(self, checked: bool) -> None:
+        """Подсвечивает выбранный тег цветом."""
         if checked:
             self.setStyleSheet(
                 f"QPushButton#dialogTagChip {{"
@@ -54,7 +60,10 @@ class _TagChip(QPushButton):
 
 
 class AddEventDialog(QDialog):
+    """Форма: название, дата, время, тег; сохранение через add_new_event."""
+
     def __init__(self, state: CalendarState, parent=None) -> None:
+        """Собирает UI и центрирует относительно parent."""
         super().__init__(parent)
         self._state = state
         self.setObjectName("addEventDialog")
@@ -75,21 +84,25 @@ class AddEventDialog(QDialog):
             )
 
     def _apply_styles(self) -> None:
+        """Подключает QSS auth + planner."""
         auth_qss = _AUTH_QSS.read_text(encoding="utf-8")
         planner_qss = _PLANNER_QSS.read_text(encoding="utf-8")
         self.setStyleSheet(auth_qss + "\n" + planner_qss)
 
     @staticmethod
     def _caption(text: str) -> QLabel:
+        """Подпись поля в верхнем регистре."""
         label = QLabel(text.upper())
         label.setObjectName("dialogFieldCaption")
         return label
 
     def _add_field(self, layout: QVBoxLayout, caption: str, widget: QWidget) -> None:
+        """Добавляет caption + виджет в layout."""
         layout.addWidget(self._caption(caption))
         layout.addWidget(widget)
 
     def _build_ui(self) -> None:
+        """Поля формы, чипы тегов и кнопки Добавить/Отмена."""
         root = QVBoxLayout(self)
         root.setContentsMargins(1, 1, 1, 1)
         root.setSpacing(0)
@@ -197,12 +210,14 @@ class AddEventDialog(QDialog):
         self._name.setFocus()
 
     def toggle_maximized(self) -> None:
+        """Для TitleBar: развернуть/свернуть (редко используется)."""
         if self.isMaximized():
             self.showNormal()
         else:
             self.showMaximized()
 
     def paintEvent(self, event) -> None:
+        """Скруглённый фон диалога."""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
         rect = QRectF(self.rect()).adjusted(0.5, 0.5, -0.5, -0.5)
@@ -214,12 +229,14 @@ class AddEventDialog(QDialog):
         super().paintEvent(event)
 
     def _selected_tag(self) -> str | None:
+        """Имя отмеченного тега или None."""
         for chip in self._tag_chips:
             if chip.isChecked():
                 return chip._tag_name
         return None
 
     def _parse_date(self, text: str) -> date | None:
+        """Парсит ДД.ММ.ГГГГ."""
         text = text.strip()
         try:
             parts = text.split(".")
@@ -231,6 +248,7 @@ class AddEventDialog(QDialog):
             return None
 
     def _parse_time(self, text: str) -> time | None:
+        """Парсит ЧЧ:ММ."""
         text = text.strip()
         try:
             parts = text.split(":")
@@ -244,6 +262,7 @@ class AddEventDialog(QDialog):
         return None
 
     def _try_accept(self) -> None:
+        """Валидирует форму и вызывает add_new_event; при успехе accept()."""
         name = self._name.text().strip()
         if not name:
             return

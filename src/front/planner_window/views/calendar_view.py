@@ -1,3 +1,5 @@
+"""Вид недельного календаря."""
+
 from collections import Counter
 from datetime import date
 
@@ -18,7 +20,10 @@ from .base_view import BaseView
 
 
 class CalendarView(BaseView):
+    """Вид недельного календаря с сеткой событий."""
+
     def __init__(self, state: CalendarState, on_tags_updated=None) -> None:
+        """Собирает шапку недели и WeekGrid."""
         super().__init__()
         self.setObjectName("calendarView")
         self.setAttribute(Qt.WA_StyledBackground, True)
@@ -38,11 +43,13 @@ class CalendarView(BaseView):
         layout.addWidget(self._grid, 1)
 
     def _open_add_dialog(self) -> None:
+        """Открывает диалог создания события."""
         dialog = AddEventDialog(self._state, self)
         if dialog.exec_():
             self.refresh()
 
     def _on_event_clicked(self, event: Event) -> None:
+        """Подтверждение и удаление события по клику."""
         dialog = ConfirmDialog("Удалить событие?", self)
         if dialog.exec_() != dialog.Accepted:
             return
@@ -51,6 +58,7 @@ class CalendarView(BaseView):
             self.refresh()
 
     def refresh(self) -> None:
+        """Загружает события недели и обновляет теги в сайдбаре."""
         days = self._state.week_days
         if not days:
             return

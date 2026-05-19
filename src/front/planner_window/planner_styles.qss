@@ -1,20 +1,20 @@
+/*
+ * planner_styles.qss — стили главного окна планировщика (PlannerWindow).
+ * Склеивается с auth_styles.qss в planner_window.py (общие titleBar, windowSurface, диалоги).
+ */
+
+/* --- Базовые настройки --- */
 QWidget {
   color: #f7f2f5;
   font-family: "Noto Sans";
   font-size: 11px;
 }
 
+/* --- Левый сайдбар (фон рисуется в paintEvent Sidebar) --- */
 QFrame#plannerSidebar {
   background: transparent;
   border: none;
   border-bottom-left-radius: 11px;
-}
-
-QLabel#plannerBrand {
-  font-family: "Noto Serif";
-  font-size: 26px;
-  font-weight: 800;
-  color: #F6F0F4;
 }
 
 QLabel#sectionCaption {
@@ -24,6 +24,7 @@ QLabel#sectionCaption {
   letter-spacing: 2px;
 }
 
+/* --- Переключатель «Календарь» / «Задачи» (ViewSwitcher) --- */
 QFrame#viewSwitcherWrap {
   background: transparent;
 }
@@ -56,6 +57,7 @@ QLabel#viewSwitchLabel[active="true"] {
   color: #F03F83;
 }
 
+/* --- Список тегов в сайдбаре (только на вкладке календаря) --- */
 QFrame#tagRow {
   background: transparent;
 }
@@ -75,6 +77,7 @@ QLabel#tagCount {
   font-size: 14px;
 }
 
+/* --- Шапка недели: диапазон дат, стрелки, «+ Событие» --- */
 QLabel#weekRangeLabel {
   font-family: "Noto Sans";
   font-size: 24px;
@@ -119,6 +122,7 @@ QPushButton#primaryButton:hover {
   background-color: #FF5A9B;
 }
 
+/* --- Вид календаря: прозрачный фон, сетка поверх градиента plannerContent --- */
 QWidget#calendarView,
 QFrame#weekHeaderBar {
   background: transparent;
@@ -142,6 +146,7 @@ QFrame#timeRuler {
   background: transparent;
 }
 
+/* --- Заголовки дней недели над сеткой --- */
 QFrame#dayHeaderCell {
   background: transparent;
 }
@@ -162,6 +167,7 @@ QLabel#dayNumber[today="true"] {
   color: #F03F83;
 }
 
+/* --- Колонка дня и шкала времени --- */
 QFrame#dayColumn {
   background: transparent;
   border-left: 1px solid #221e28;
@@ -172,6 +178,7 @@ QLabel#timeLabel {
   font-size: 14px;
 }
 
+/* --- Блок события на сетке (EventBlock); фон/рамка задаются в коде по тегу --- */
 QLabel#eventBlockTime,
 QLabel#eventBlockTitle,
 QLabel#eventBlockTag {
@@ -193,6 +200,7 @@ QLabel#eventBlockTag {
   font-size: 10px;
 }
 
+/* --- Диалог подтверждения (удаление события) --- */
 QDialog#confirmDialog {
   background: transparent;
 }
@@ -209,6 +217,7 @@ QLabel#confirmDialogMessage {
   font-weight: 500;
 }
 
+/* --- Диалог добавления события (AddEventDialog) --- */
 QDialog#addEventDialog {
   background: transparent;
 }
@@ -301,6 +310,7 @@ QPushButton#dialogSaveButton:hover {
   background-color: #FF5A9B;
 }
 
+/* --- Основная область контента (градиент за календарём и задачами) --- */
 QFrame#plannerContent {
   background: qlineargradient(
     x1: 0, y1: 0, x2: 1, y2: 1,
@@ -311,6 +321,7 @@ QFrame#plannerContent {
   border-bottom-right-radius: 11px;
 }
 
+/* --- Вкладка «Задачи» --- */
 QWidget#tasksView {
   background: transparent;
 }
@@ -342,6 +353,7 @@ QLabel#countBadge {
   padding: 2px 10px;
 }
 
+/* --- Поле добавления задачи --- */
 QFrame#taskInputWrap {
   background-color: rgba(22, 20, 28, 230);
   border: 1px solid #322d39;
@@ -384,6 +396,7 @@ QPushButton#taskAddButton:hover {
   background: transparent;
 }
 
+/* --- Кольцо прогресса выполненных задач --- */
 QFrame#progressRing {
   background: transparent;
 }
@@ -394,6 +407,7 @@ QLabel#progressText {
   font-weight: 700;
 }
 
+/* --- Фильтры: Все / Активные / Выполненные --- */
 QPushButton#filterChip {
   background: rgba(22, 20, 28, 200);
   border: 1px solid #322d39;
@@ -416,6 +430,7 @@ QPushButton#filterChip[active="true"] {
   color: #F6F0F4;
 }
 
+/* --- Секции «В работе» / «Выполнено» --- */
 QLabel#sectionTitle {
   color: #6f6875;
   font-size: 13px;
@@ -433,6 +448,7 @@ QLabel#sectionBadge {
   min-width: 24px;
 }
 
+/* --- Строка задачи (TaskRow) --- */
 QFrame#taskRow {
   background-color: rgba(22, 20, 28, 200);
   border: 1px solid #2a2530;
@@ -479,6 +495,7 @@ QPushButton#taskDelete:hover {
   color: #ff8aa3;
 }
 
+/* --- Общие скроллбары списков --- */
 QScrollArea {
   background: transparent;
   border: none;
@@ -495,6 +512,7 @@ QScrollBar::handle:vertical {
   min-height: 24px;
 }
 
+/* --- Правая колонка задач: неделя + сегодня в календаре --- */
 QFrame#tasksSidePanel {
   background: transparent;
 }
@@ -521,6 +539,7 @@ QLabel#todayEventsTitle {
   font-weight: 500;
 }
 
+/* --- Мини-календарь недели (WeekOverview) --- */
 QFrame#weekDayCell {
   background-color: rgba(30, 28, 38, 120);
   border: 1px solid transparent;
@@ -549,6 +568,7 @@ QLabel#weekDayNumber {
   font-weight: 600;
 }
 
+/* --- Точка «есть события» под днём недели --- */
 QLabel#weekDayDot {
   background-color: transparent;
   border: 1px solid #6f6875;
@@ -570,6 +590,7 @@ QLabel#weekDayDot[today="true"][hasEvents="false"] {
   border: 1px solid rgba(240, 63, 131, 140);
 }
 
+/* --- Панель «Сегодня в календаре» --- */
 QLabel#todayEventsDot {
   color: #F03F83;
   font-size: 8px;

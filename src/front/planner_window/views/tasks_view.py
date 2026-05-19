@@ -1,3 +1,5 @@
+"""Вид списка задач."""
+
 from datetime import date
 
 from PyQt5.QtCore import Qt
@@ -21,10 +23,13 @@ from .base_view import BaseView
 
 
 class TasksView(BaseView):
+    """Вид списка задач с фильтрами и правой панелью недели."""
+
     def __init__(
         self,
         calendar_state: CalendarState,
     ) -> None:
+        """Собирает колонку задач и сайдбар (неделя + сегодня)."""
         super().__init__()
         self.setObjectName("tasksView")
         self.setAttribute(Qt.WA_StyledBackground, True)
@@ -91,10 +96,12 @@ class TasksView(BaseView):
         root.addWidget(side_wrap)
 
     def _on_filter_changed(self, key: str) -> None:
+        """Меняет фильтр и перерисовывает списки."""
         self._filter = key
         self.refresh()
 
     def refresh(self) -> None:
+        """Синхронизирует задачи с БД и обновляет UI."""
         try:
             _update_tasks()
         except (*NETWORK_ERRORS, AuthError, RuntimeError):
@@ -124,6 +131,7 @@ class TasksView(BaseView):
         self._refresh_side_panels()
 
     def _refresh_side_panels(self) -> None:
+        """Обновляет мини-календарь недели и блок «сегодня»."""
         days = self._state.week_days
         event_counts: dict[date, int] = {day: 0 for day in days}
         today_events: list = []

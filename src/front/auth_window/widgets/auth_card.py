@@ -1,3 +1,5 @@
+"""Карточка входа/регистрации с вкладками."""
+
 from collections.abc import Callable
 from pathlib import Path
 from typing import Optional
@@ -20,6 +22,8 @@ from .input_field import AuthInput
 
 
 class FormPage(QFrame):
+    """Одна форма: логин, пароль, опционально повтор пароля."""
+
     MIN_PASSWORD_LEN = 5
 
     def __init__(
@@ -30,9 +34,9 @@ class FormPage(QFrame):
         login_hint: str,
         password_hint: str,
         button_text: str,
-        bottom_text: Optional[str] = None,
         require_password_repeat: bool = False,
     ):
+        """Собирает поля; при require_password_repeat — валидация паролей."""
         super().__init__()
         self.setObjectName("formPage")
         self._require_password_repeat = require_password_repeat
@@ -121,14 +125,8 @@ class FormPage(QFrame):
             layout.addSpacing(36)
             layout.addWidget(self.submit)
 
-        if bottom_text:
-            bottom = QLabel(bottom_text)
-            bottom.setObjectName("bottomText")
-            bottom.setAlignment(Qt.AlignCenter)
-            layout.addSpacing(34)
-            layout.addWidget(bottom)
-
     def _update_register_password_hints(self):
+        """Показывает ошибки длины и несовпадения паролей."""
         if not self._require_password_repeat or self._password_error is None:
             return
         pw = self.password_input.text()
@@ -149,6 +147,7 @@ class FormPage(QFrame):
             self._repeat_error.hide()
 
     def register_form_valid(self) -> bool:
+        """Проверяет пароль перед sign_up."""
         pw = self.password_input.text()
         rep = self.repeat_password_input.text()
         if len(pw) < self.MIN_PASSWORD_LEN:
@@ -167,16 +166,21 @@ class FormPage(QFrame):
         return True
 
     def show_api_error(self, message: str) -> None:
+        """Показывает текст ошибки API под формой."""
         self._api_error.setText(message)
         self._api_error.show()
 
     def clear_api_error(self) -> None:
+        """Скрывает блок ошибки API."""
         self._api_error.clear()
         self._api_error.hide()
 
 
 class AuthCard(QFrame):
+    """Вкладки Войти/Регистрация и вызов sign_in / sign_up."""
+
     def __init__(self, asserts_dir: Path, on_auth_success: Callable[[], None]):
+        """on_auth_success — после успешного входа или регистрации."""
         super().__init__()
         self.setObjectName("authCard")
         self._on_auth_success = on_auth_success
@@ -240,6 +244,7 @@ class AuthCard(QFrame):
         self.show_login()
 
     def _wire_clear_api_error_on_edit(self) -> None:
+        """Сбрасывает ошибку API при изменении полей."""
         self.login_page.login_input.line_edit.textChanged.connect(self.login_page.clear_api_error)
         self.login_page.password_input.line_edit.textChanged.connect(self.login_page.clear_api_error)
         self.register_page.login_input.line_edit.textChanged.connect(self.register_page.clear_api_error)
@@ -251,10 +256,12 @@ class AuthCard(QFrame):
             rep.line_edit.textChanged.connect(self.register_page.clear_api_error)
 
     def _clear_api_error(self) -> None:
+        """Сбрасывает ошибки на обеих формах."""
         self.login_page.clear_api_error()
         self.register_page.clear_api_error()
 
     def _on_login_clicked(self) -> None:
+        """sign_in и on_auth_success при успехе."""
         login = self.login_page.login_input.text().strip()
         password = self.login_page.password_input.text()
         if not login or not password:
@@ -269,6 +276,7 @@ class AuthCard(QFrame):
         self._on_auth_success()
 
     def _on_register_clicked(self) -> None:
+        """sign_up после валидации формы."""
         if not self.register_page.register_form_valid():
             return
         login = self.register_page.login_input.text().strip()
@@ -285,6 +293,7 @@ class AuthCard(QFrame):
         self._on_auth_success()
 
     def show_login(self):
+        """Переключает стек на форму входа."""
         self._clear_api_error()
         self.stack.setCurrentWidget(self.login_page)
         self.login_tab.setProperty("active", True)
@@ -292,6 +301,7 @@ class AuthCard(QFrame):
         self._refresh_tabs()
 
     def show_register(self):
+        """Переключает стек на регистрацию."""
         self._clear_api_error()
         self.stack.setCurrentWidget(self.register_page)
         self.login_tab.setProperty("active", False)
@@ -299,6 +309,7 @@ class AuthCard(QFrame):
         self._refresh_tabs()
 
     def _refresh_tabs(self):
+        """Переприменяет QSS к вкладкам после смены active."""
         for button in (self.login_tab, self.register_tab):
             button.style().unpolish(button)
             button.style().polish(button)

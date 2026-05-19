@@ -1,4 +1,4 @@
-"""Frameless window title bar (shared between auth and planner)."""
+"""Общий title bar для PlannerWindow и диалогов (перетаскивание, кнопки окна)."""
 
 from PyQt5.QtCore import QRectF, Qt
 from PyQt5.QtGui import QColor, QPainter, QPen
@@ -6,7 +6,10 @@ from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton, QWidget
 
 
 class WindowControlButton(QPushButton):
+    """Кнопка minimize / maximize / close."""
+
     def __init__(self, kind: str) -> None:
+        """kind определяет пиктограмму в paintEvent."""
         super().__init__()
         self.kind = kind
         self.setObjectName("titleButton")
@@ -14,6 +17,7 @@ class WindowControlButton(QPushButton):
         self.setCursor(Qt.PointingHandCursor)
 
     def paintEvent(self, event) -> None:
+        """Рисует иконку управления окном."""
         super().paintEvent(event)
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
@@ -37,6 +41,8 @@ class WindowControlButton(QPushButton):
 
 
 class TitleBar(QFrame):
+    """Заголовок по центру, версия и кнопки; drag окна."""
+
     def __init__(
         self,
         window,
@@ -44,6 +50,7 @@ class TitleBar(QFrame):
         *,
         show_version: bool = True,
     ) -> None:
+        """show_version=False — для диалогов без «v1.0»; window — родительское окно."""
         super().__init__()
         self.window = window
         self.drag_position = None
@@ -89,6 +96,7 @@ class TitleBar(QFrame):
         layout.addWidget(close)
 
     def resizeEvent(self, event) -> None:
+        """Балансирует отступ слева и центрирует title."""
         controls_width = 14 + 32 * 3
         if self._show_version:
             controls_width += 12 + self._version.sizeHint().width()
@@ -97,11 +105,13 @@ class TitleBar(QFrame):
         super().resizeEvent(event)
 
     def mousePressEvent(self, event) -> None:
+        """Начало перетаскивания окна."""
         if event.button() == Qt.LeftButton:
             self.drag_position = event.globalPos() - self.window.frameGeometry().topLeft()
             event.accept()
 
     def mouseMoveEvent(self, event) -> None:
+        """Двигает окно, если не maximized."""
         if (
             self.drag_position
             and event.buttons() & Qt.LeftButton
@@ -111,5 +121,6 @@ class TitleBar(QFrame):
             event.accept()
 
     def mouseReleaseEvent(self, event) -> None:
+        """Конец перетаскивания."""
         self.drag_position = None
         super().mouseReleaseEvent(event)
