@@ -16,6 +16,8 @@ def _update_tasks() -> Response:
         return Response(status_code=200, message="Tasks updated successfully")
     except RuntimeError as e:
         return Response(status_code=500, message="Internal server error", exception=str(e))
+    except Exception as e:
+        return Response(status_code=505, message="Database error", exception=str(e))
 
 def add_new_task(name: str, is_complete: bool = False) -> Response:
     try:

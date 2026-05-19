@@ -1,17 +1,19 @@
+"""Frameless window title bar (shared between auth and planner)."""
+
 from PyQt5.QtCore import QRectF, Qt
 from PyQt5.QtGui import QColor, QPainter, QPen
-from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton
+from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton, QWidget
 
 
 class WindowControlButton(QPushButton):
-    def __init__(self, kind: str):
+    def __init__(self, kind: str) -> None:
         super().__init__()
         self.kind = kind
         self.setObjectName("titleButton")
         self.setFixedSize(32, 30)
         self.setCursor(Qt.PointingHandCursor)
 
-    def paintEvent(self, event):
+    def paintEvent(self, event) -> None:
         super().paintEvent(event)
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
@@ -35,7 +37,13 @@ class WindowControlButton(QPushButton):
 
 
 class TitleBar(QFrame):
-    def __init__(self, window, title_markup: str | None = None):
+    def __init__(
+        self,
+        window,
+        title_markup: str | None = None,
+        *,
+        show_version: bool = True,
+    ) -> None:
         super().__init__()
         self.window = window
         self.drag_position = None
@@ -52,6 +60,9 @@ class TitleBar(QFrame):
         self.title.setAlignment(Qt.AlignCenter)
         self.title.setAttribute(Qt.WA_TransparentForMouseEvents)
 
+        self._left_spacer = QWidget(self)
+        self._left_spacer.setAttribute(Qt.WA_TransparentForMouseEvents)
+
         version = QLabel("v1.0")
         version.setObjectName("versionLabel")
 
@@ -65,23 +76,32 @@ class TitleBar(QFrame):
         maximize.clicked.connect(window.toggle_maximized)
         close.clicked.connect(window.close)
 
-        layout.addStretch(1)
-        layout.addWidget(version)
-        layout.addSpacing(12)
+        self._show_version = show_version
+        self._version = version
+
+        layout.addWidget(self._left_spacer)
+        if show_version:
+            layout.addStretch(1)
+            layout.addWidget(version)
+            layout.addSpacing(12)
         layout.addWidget(minimize)
         layout.addWidget(maximize)
         layout.addWidget(close)
 
-    def resizeEvent(self, event):
+    def resizeEvent(self, event) -> None:
+        controls_width = 14 + 32 * 3
+        if self._show_version:
+            controls_width += 12 + self._version.sizeHint().width()
+        self._left_spacer.setFixedWidth(controls_width)
         self.title.setGeometry(0, 0, self.width(), self.height())
         super().resizeEvent(event)
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event) -> None:
         if event.button() == Qt.LeftButton:
             self.drag_position = event.globalPos() - self.window.frameGeometry().topLeft()
             event.accept()
 
-    def mouseMoveEvent(self, event):
+    def mouseMoveEvent(self, event) -> None:
         if (
             self.drag_position
             and event.buttons() & Qt.LeftButton
@@ -90,6 +110,6 @@ class TitleBar(QFrame):
             self.window.move(event.globalPos() - self.drag_position)
             event.accept()
 
-    def mouseReleaseEvent(self, event):
+    def mouseReleaseEvent(self, event) -> None:
         self.drag_position = None
         super().mouseReleaseEvent(event)

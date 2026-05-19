@@ -27,17 +27,19 @@ def get_events(date_start: date, date_finish: date) -> list[list[Event]]:
 
 def add_new_event(
     event_date: date,
-    start: time,
-    finish: time,
+    start: time | datetime,
+    finish: time | datetime,
     description: str,
     tag: str | None = None,
     color: str | None = None) -> Response:
     if tag is not None:
         color = TAGS[tag]
+    start_dt = start if isinstance(start, datetime) else datetime.combine(event_date, start)
+    finish_dt = finish if isinstance(finish, datetime) else datetime.combine(event_date, finish)
     try:
-        Calendar.add_new(event_date, datetime.combine(event_date, start), datetime.combine(event_date, finish), description, tag, color)
+        Calendar.add_new(event_date, start_dt, finish_dt, description, tag, color)
         return Response(status_code=200, message="Event added successfully")
-    except RuntimeError as e:
+    except Exception as e:
         return Response(status_code=500, message="Internal server error", exception=str(e))
 
 
@@ -45,5 +47,5 @@ def delete_event(event_id: str) -> Response:
     try:
         Calendar.delete(event_id)
         return Response(status_code=200, message="Event deleted successfully")
-    except RuntimeError as e:
+    except Exception as e:
         return Response(status_code=500, message="Internal server error", exception=str(e))
