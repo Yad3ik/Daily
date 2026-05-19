@@ -39,7 +39,7 @@ def add_new_event(
     try:
         Calendar.add_new(event_date, start_dt, finish_dt, description, tag, color)
         return Response(status_code=200, message="Event added successfully")
-    except RuntimeError as e:
+    except Exception as e:
         return Response(status_code=500, message="Internal server error", exception=str(e))
 
 
@@ -47,5 +47,5 @@ def delete_event(event_id: str) -> Response:
     try:
         Calendar.delete(event_id)
         return Response(status_code=200, message="Event deleted successfully")
-    except RuntimeError as e:
+    except Exception as e:
         return Response(status_code=500, message="Internal server error", exception=str(e))

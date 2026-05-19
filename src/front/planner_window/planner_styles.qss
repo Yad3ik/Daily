@@ -344,25 +344,44 @@ QLabel#countBadge {
 
 QFrame#taskInputWrap {
   background-color: rgba(22, 20, 28, 230);
-  border: 1px dashed #3a3442;
+  border: 1px solid #322d39;
   border-radius: 14px;
+}
+
+QLabel#taskInputPlus {
+  color: #9c95a1;
+  font-size: 28px;
+  font-weight: 300;
+  background: transparent;
+  border: none;
 }
 
 QLineEdit#taskInputField {
   background: transparent;
   border: none;
   color: #F6F0F4;
-  font-size: 14px;
+  font-size: 16px;
   selection-background-color: #F03F83;
 }
 
-QPushButton#enterChip {
-  background-color: #24212b;
-  border: 1px solid #3a3442;
-  border-radius: 6px;
-  color: #9c95a1;
-  font-size: 11px;
-  padding: 4px 10px;
+QLineEdit#taskInputField::placeholder {
+  color: #6f6875;
+  font-size: 16px;
+}
+
+QPushButton#taskAddButton {
+  background: transparent;
+  border: none;
+  color: #c5bdc7;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px 18px;
+  min-height: 36px;
+}
+
+QPushButton#taskAddButton:hover {
+  color: #F6F0F4;
+  background: transparent;
 }
 
 QFrame#progressRing {
@@ -378,11 +397,13 @@ QLabel#progressText {
 QPushButton#filterChip {
   background: rgba(22, 20, 28, 200);
   border: 1px solid #322d39;
-  border-radius: 10px;
+  border-radius: 12px;
   color: #9c95a1;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 8px 16px;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.6px;
+  padding: 11px 22px;
+  min-height: 44px;
 }
 
 QPushButton#filterChip:hover {
@@ -390,24 +411,26 @@ QPushButton#filterChip:hover {
 }
 
 QPushButton#filterChip[active="true"] {
-  border-color: rgba(240, 63, 131, 120);
+  background-color: rgba(240, 63, 131, 90);
+  border-color: #F03F83;
   color: #F6F0F4;
 }
 
 QLabel#sectionTitle {
   color: #6f6875;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 800;
-  letter-spacing: 1px;
+  letter-spacing: 1.2px;
 }
 
 QLabel#sectionBadge {
   background-color: #24212b;
   color: #9c95a1;
-  border-radius: 8px;
-  font-size: 11px;
+  border-radius: 10px;
+  font-size: 14px;
   font-weight: 700;
-  padding: 2px 8px;
+  padding: 3px 10px;
+  min-width: 24px;
 }
 
 QFrame#taskRow {
@@ -422,7 +445,7 @@ QFrame#taskRow:hover {
 
 QLabel#taskRowLabel {
   color: #F6F0F4;
-  font-size: 14px;
+  font-size: 18px;
 }
 
 QLabel#taskRowLabel[completed="true"] {
@@ -433,14 +456,14 @@ QLabel#taskRowLabel[completed="true"] {
 QPushButton#taskCheck {
   background: transparent;
   border: 2px solid #4a4354;
-  border-radius: 11px;
+  border-radius: 13px;
 }
 
 QPushButton#taskCheck[checked="true"] {
   background-color: #F03F83;
   border-color: #F03F83;
   color: #fff;
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 800;
 }
 
@@ -470,4 +493,104 @@ QScrollBar::handle:vertical {
   background: #3a3442;
   border-radius: 4px;
   min-height: 24px;
+}
+
+QFrame#tasksSidePanel {
+  background: transparent;
+}
+
+QFrame#weekOverview,
+QFrame#todayEventsPanel {
+  background-color: rgba(22, 20, 28, 200);
+  border: 1px solid #2a2530;
+  border-radius: 14px;
+  max-width: 340px;
+}
+
+QLabel#weekOverviewTitle,
+QLabel#todayEventsCaption {
+  color: #6f6875;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+}
+
+QLabel#todayEventsTitle {
+  color: #F6F0F4;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+QFrame#weekDayCell {
+  background-color: rgba(30, 28, 38, 120);
+  border: 1px solid transparent;
+  border-radius: 10px;
+}
+
+QFrame#weekDayCell[today="true"] {
+  border: 1px solid #F03F83;
+  background-color: rgba(240, 63, 131, 25);
+}
+
+QLabel#weekDayName {
+  color: #6f6875;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+QFrame#weekDayCell[today="true"] QLabel#weekDayName,
+QFrame#weekDayCell[today="true"] QLabel#weekDayNumber {
+  color: #F03F83;
+}
+
+QLabel#weekDayNumber {
+  color: #F6F0F4;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+QLabel#weekDayDot {
+  background-color: transparent;
+  border: 1px solid #6f6875;
+  border-radius: 4px;
+}
+
+QLabel#weekDayDot[hasEvents="true"] {
+  background-color: #6f6875;
+  border: none;
+}
+
+QLabel#weekDayDot[today="true"][hasEvents="true"] {
+  background-color: #F03F83;
+  border: none;
+}
+
+QLabel#weekDayDot[today="true"][hasEvents="false"] {
+  background-color: transparent;
+  border: 1px solid rgba(240, 63, 131, 140);
+}
+
+QLabel#todayEventsDot {
+  color: #F03F83;
+  font-size: 8px;
+}
+
+QLabel#todayEventsEmpty {
+  color: #6f6875;
+  font-size: 12px;
+}
+
+QFrame#todayEventRow {
+  background: transparent;
+}
+
+QLabel#todayEventTime {
+  color: #9c95a1;
+  font-size: 12px;
+}
+
+QLabel#todayEventTitle {
+  color: #F6F0F4;
+  font-size: 13px;
+  font-weight: 500;
 }

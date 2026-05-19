@@ -87,7 +87,7 @@ class PlannerWindow(QWidget):
             self._calendar_state,
             on_tags_updated=self._sidebar.refresh_tags,
         )
-        self._tasks_view = TasksView()
+        self._tasks_view = TasksView(self._calendar_state)
         self._stack.addWidget(self._calendar_view)
         self._stack.addWidget(self._tasks_view)
 
