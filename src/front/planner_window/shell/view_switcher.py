@@ -1,7 +1,41 @@
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton
+from pathlib import Path
 
-from .nav_icons import CalendarNavIcon, CheckSquareIcon
+from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton, QVBoxLayout
+
+_ICONS = Path(__file__).resolve().parents[1] / "asserts" / "icons"
+
+
+class _NavIcon(QLabel):
+    def __init__(self, name: str, *, active: bool = False, size: int = 24) -> None:
+        super().__init__()
+        self._name = name
+        self._active = active
+        self._size = size
+        self.setFixedSize(size, size)
+        self.setAlignment(Qt.AlignCenter)
+        self._apply()
+
+    def set_active(self, active: bool) -> None:
+        self._active = active
+        self._apply()
+
+    def _apply(self) -> None:
+        if self._name == "calendar":
+            path = _ICONS / ("calendar_active.png" if self._active else "calendar.png")
+        else:
+            path = _ICONS / ("tasks_active.png" if self._active else "tasks.png")
+        if not path.exists():
+            self.clear()
+            return
+        pix = QPixmap(str(path)).scaled(
+            self._size,
+            self._size,
+            Qt.KeepAspectRatio,
+            Qt.SmoothTransformation,
+        )
+        self.setPixmap(pix)
 
 
 class ViewSwitcher(QFrame):
@@ -11,32 +45,37 @@ class ViewSwitcher(QFrame):
         super().__init__()
         self.setObjectName("viewSwitcherWrap")
         self._buttons: dict[str, QPushButton] = {}
-        self._icons: dict[str, QFrame] = {}
+        self._icons: dict[str, _NavIcon] = {}
+        self._labels: dict[str, QLabel] = {}
 
-        layout = QHBoxLayout(self)
-        layout.setContentsMargins(4, 4, 4, 4)
-        layout.setSpacing(4)
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(8)
 
         for key, label in (("calendar", "Календарь"), ("tasks", "Задачи")):
             btn = QPushButton()
             btn.setObjectName("viewSwitchBtn")
             btn.setProperty("active", "false")
             btn.setCursor(Qt.PointingHandCursor)
+            btn.setMinimumHeight(52)
             btn.clicked.connect(lambda _=False, k=key: self._select(k))
 
             inner = QHBoxLayout(btn)
-            inner.setContentsMargins(12, 10, 14, 10)
-            inner.setSpacing(8)
+            inner.setContentsMargins(16, 0, 18, 0)
+            inner.setSpacing(12)
 
-            icon = CalendarNavIcon(18, False) if key == "calendar" else CheckSquareIcon(18, False)
+            icon = _NavIcon(key, active=False, size=26)
             inner.addWidget(icon)
             lbl = QLabel(label)
             lbl.setObjectName("viewSwitchLabel")
-            inner.addWidget(lbl)
+            lbl.setProperty("active", "false")
+            lbl.setAlignment(Qt.AlignVCenter | Qt.AlignLeft)
+            inner.addWidget(lbl, 1)
 
             self._icons[key] = icon
+            self._labels[key] = lbl
             self._buttons[key] = btn
-            layout.addWidget(btn, 1)
+            layout.addWidget(btn)
 
         self.set_active("calendar")
 
@@ -47,10 +86,12 @@ class ViewSwitcher(QFrame):
     def set_active(self, key: str) -> None:
         for name, btn in self._buttons.items():
             active = name == key
-            btn.setProperty("active", "true" if active else "false")
+            flag = "true" if active else "false"
+            btn.setProperty("active", flag)
             btn.style().unpolish(btn)
             btn.style().polish(btn)
-            icon = self._icons[name]
-            if hasattr(icon, "_active"):
-                icon._active = active
-                icon.update()
+            lbl = self._labels[name]
+            lbl.setProperty("active", flag)
+            lbl.style().unpolish(lbl)
+            lbl.style().polish(lbl)
+            self._icons[name].set_active(active)

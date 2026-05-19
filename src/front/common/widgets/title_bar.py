@@ -2,7 +2,7 @@
 
 from PyQt5.QtCore import QRectF, Qt
 from PyQt5.QtGui import QColor, QPainter, QPen
-from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton
+from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton, QWidget
 
 
 class WindowControlButton(QPushButton):
@@ -37,7 +37,13 @@ class WindowControlButton(QPushButton):
 
 
 class TitleBar(QFrame):
-    def __init__(self, window, title_markup: str | None = None) -> None:
+    def __init__(
+        self,
+        window,
+        title_markup: str | None = None,
+        *,
+        show_version: bool = True,
+    ) -> None:
         super().__init__()
         self.window = window
         self.drag_position = None
@@ -54,6 +60,9 @@ class TitleBar(QFrame):
         self.title.setAlignment(Qt.AlignCenter)
         self.title.setAttribute(Qt.WA_TransparentForMouseEvents)
 
+        self._left_spacer = QWidget(self)
+        self._left_spacer.setAttribute(Qt.WA_TransparentForMouseEvents)
+
         version = QLabel("v1.0")
         version.setObjectName("versionLabel")
 
@@ -67,14 +76,23 @@ class TitleBar(QFrame):
         maximize.clicked.connect(window.toggle_maximized)
         close.clicked.connect(window.close)
 
-        layout.addStretch(1)
-        layout.addWidget(version)
-        layout.addSpacing(12)
+        self._show_version = show_version
+        self._version = version
+
+        layout.addWidget(self._left_spacer)
+        if show_version:
+            layout.addStretch(1)
+            layout.addWidget(version)
+            layout.addSpacing(12)
         layout.addWidget(minimize)
         layout.addWidget(maximize)
         layout.addWidget(close)
 
     def resizeEvent(self, event) -> None:
+        controls_width = 14 + 32 * 3
+        if self._show_version:
+            controls_width += 12 + self._version.sizeHint().width()
+        self._left_spacer.setFixedWidth(controls_width)
         self.title.setGeometry(0, 0, self.width(), self.height())
         super().resizeEvent(event)
 

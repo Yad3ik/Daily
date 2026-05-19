@@ -1,14 +1,17 @@
 from collections import Counter
 from datetime import date
 
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QVBoxLayout
 
 from src.back.db.exceptions import AuthError
-from src.back.to_front.events import get_events
+from src.back.structures import Event
+from src.back.to_front.events import delete_event, get_events
 from src.config import TAGS
 
 from ..calendar_state import CalendarState
 from ..widgets.calendar.add_event_dialog import AddEventDialog
+from ..widgets.calendar.confirm_dialog import ConfirmDialog
 from ..widgets.calendar.week_grid import WeekGrid
 from ..widgets.calendar.week_header import WeekHeader
 from .base_view import BaseView
@@ -18,6 +21,7 @@ class CalendarView(BaseView):
     def __init__(self, state: CalendarState, on_tags_updated=None) -> None:
         super().__init__()
         self.setObjectName("calendarView")
+        self.setAttribute(Qt.WA_StyledBackground, True)
         self._state = state
         self._on_tags_updated = on_tags_updated
 
@@ -26,7 +30,7 @@ class CalendarView(BaseView):
         layout.setSpacing(12)
 
         self._header = WeekHeader(state)
-        self._grid = WeekGrid(state)
+        self._grid = WeekGrid(state, on_event_clicked=self._on_event_clicked)
         self._header.week_changed.connect(self.refresh)
         self._header.add_event_requested.connect(self._open_add_dialog)
 
@@ -36,6 +40,14 @@ class CalendarView(BaseView):
     def _open_add_dialog(self) -> None:
         dialog = AddEventDialog(self._state, self)
         if dialog.exec_():
+            self.refresh()
+
+    def _on_event_clicked(self, event: Event) -> None:
+        dialog = ConfirmDialog("Удалить событие?", self)
+        if dialog.exec_() != dialog.Accepted:
+            return
+        res = delete_event(event.id)
+        if res.status_code == 200:
             self.refresh()
 
     def refresh(self) -> None:

@@ -35,7 +35,8 @@ class WeekHeader(QFrame):
 
         nav_left = QPushButton("‹")
         nav_left.setObjectName("navButton")
-        nav_left.setFixedSize(40, 40)
+        nav_left.setFlat(True)
+        nav_left.setFixedSize(48, 48)
         nav_left.setCursor(Qt.PointingHandCursor)
         nav_left.clicked.connect(lambda: self._shift(-1))
 
@@ -45,7 +46,8 @@ class WeekHeader(QFrame):
 
         nav_right = QPushButton("›")
         nav_right.setObjectName("navButton")
-        nav_right.setFixedSize(40, 40)
+        nav_right.setFlat(True)
+        nav_right.setFixedSize(48, 48)
         nav_right.setCursor(Qt.PointingHandCursor)
         nav_right.clicked.connect(lambda: self._shift(1))
 
@@ -56,9 +58,9 @@ class WeekHeader(QFrame):
         center.addWidget(nav_right)
         center.addStretch(1)
 
-        add_btn = QPushButton("+  Событие")
+        add_btn = QPushButton("+ Событие")
         add_btn.setObjectName("primaryButton")
-        add_btn.setFixedHeight(42)
+        add_btn.setFixedHeight(44)
         add_btn.setCursor(Qt.PointingHandCursor)
         add_btn.clicked.connect(self.add_event_requested.emit)
 

@@ -1,3 +1,4 @@
+from collections.abc import Callable
 from datetime import date, datetime
 
 from PyQt5.QtCore import Qt
@@ -29,10 +30,15 @@ class _NowLineOverlay(QWidget):
 
 
 class WeekGrid(QFrame):
-    def __init__(self, state: CalendarState) -> None:
+    def __init__(
+        self,
+        state: CalendarState,
+        on_event_clicked: Callable[[Event], None] | None = None,
+    ) -> None:
         super().__init__()
         self.setObjectName("weekGridWrap")
         self._state = state
+        self._on_event_clicked = on_event_clicked
         self._header_cells: list[DayHeaderCell] = []
         self._day_columns: list[DayColumn] = []
 
@@ -41,7 +47,7 @@ class WeekGrid(QFrame):
         outer.setSpacing(0)
 
         headers = QHBoxLayout()
-        headers.setContentsMargins(56, 0, 0, 0)
+        headers.setContentsMargins(64, 0, 0, 0)
         headers.setSpacing(0)
         for day in state.week_days:
             cell = DayHeaderCell(day)
@@ -50,11 +56,15 @@ class WeekGrid(QFrame):
         outer.addLayout(headers)
 
         self._scroll = QScrollArea()
+        self._scroll.setObjectName("weekGridScroll")
         self._scroll.setWidgetResizable(True)
         self._scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self._scroll.setFrameShape(QFrame.NoFrame)
+        self._scroll.viewport().setAutoFillBackground(False)
 
         scroll_body = QWidget()
+        scroll_body.setObjectName("weekGridScrollBody")
+        scroll_body.setAttribute(Qt.WA_StyledBackground, True)
         scroll_body.setMinimumHeight(GRID_HEIGHT)
         body_layout = QHBoxLayout(scroll_body)
         body_layout.setContentsMargins(0, 0, 0, 0)
@@ -64,12 +74,16 @@ class WeekGrid(QFrame):
         body_layout.addWidget(self._ruler)
 
         cols_host = QWidget()
+        cols_host.setObjectName("weekGridCols")
+        cols_host.setAttribute(Qt.WA_StyledBackground, True)
         cols_host.setMinimumHeight(GRID_HEIGHT)
         cols_layout = QHBoxLayout(cols_host)
         cols_layout.setContentsMargins(0, 0, 0, 0)
         cols_layout.setSpacing(0)
 
-        self._day_columns = [DayColumn() for _ in range(7)]
+        self._day_columns = [
+            DayColumn(on_event_clicked=on_event_clicked) for _ in range(7)
+        ]
         for col in self._day_columns:
             cols_layout.addWidget(col, 1)
 

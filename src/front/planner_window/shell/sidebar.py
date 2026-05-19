@@ -20,7 +20,7 @@ class _TagRow(QFrame):
         super().__init__()
         self.setObjectName("tagRow")
         lay = QHBoxLayout(self)
-        lay.setContentsMargins(4, 4, 4, 4)
+        lay.setContentsMargins(4, 10, 4, 10)
         lay.setSpacing(10)
 
         dot = QLabel("●")
@@ -71,7 +71,7 @@ class Sidebar(QFrame):
         tags_cap.setObjectName("sectionCaption")
         tags_layout.addWidget(tags_cap)
         self._tags_list = QVBoxLayout()
-        self._tags_list.setSpacing(2)
+        self._tags_list.setSpacing(10)
         tags_layout.addLayout(self._tags_list)
         root.addWidget(self._tags_wrap)
 

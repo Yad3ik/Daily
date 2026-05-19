@@ -1,3 +1,4 @@
+from collections.abc import Callable
 from datetime import date
 
 from PyQt5.QtCore import Qt
@@ -42,10 +43,11 @@ class DayHeaderCell(QFrame):
 
 
 class DayColumn(QFrame):
-    def __init__(self) -> None:
+    def __init__(self, on_event_clicked: Callable[[Event], None] | None = None) -> None:
         super().__init__()
         self.setObjectName("dayColumn")
         self.setMinimumHeight(GRID_HEIGHT)
+        self._on_event_clicked = on_event_clicked
         self._day: date | None = None
         self._events: list[Event] = []
         self._blocks: list[EventBlock] = []
@@ -62,6 +64,8 @@ class DayColumn(QFrame):
         for event in self._events:
             block = EventBlock(event)
             block.setParent(self)
+            if self._on_event_clicked is not None:
+                block.clicked.connect(self._on_event_clicked)
             self._blocks.append(block)
         self._layout_blocks()
 

@@ -1,5 +1,5 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QHBoxLayout, QScrollArea, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QFrame, QHBoxLayout, QScrollArea, QVBoxLayout, QWidget
 
 from src.back.to_front.todo import update_me_tasks
 from src.session import Me
@@ -16,6 +16,7 @@ class TasksView(BaseView):
     def __init__(self) -> None:
         super().__init__()
         self.setObjectName("tasksView")
+        self.setAttribute(Qt.WA_StyledBackground, True)
         self._filter = "all"
 
         layout = QVBoxLayout(self)
@@ -33,9 +34,15 @@ class TasksView(BaseView):
         tools.addWidget(self._filters, 1)
 
         scroll = QScrollArea()
+        scroll.setObjectName("tasksScroll")
         scroll.setWidgetResizable(True)
         scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        scroll.setFrameShape(QFrame.NoFrame)
+        scroll.viewport().setAutoFillBackground(False)
+
         scroll_body = QWidget()
+        scroll_body.setObjectName("tasksScrollBody")
+        scroll_body.setAttribute(Qt.WA_StyledBackground, True)
         self._sections_layout = QVBoxLayout(scroll_body)
         self._sections_layout.setContentsMargins(0, 0, 8, 0)
         self._sections_layout.setSpacing(20)

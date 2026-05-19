@@ -18,23 +18,23 @@ QLabel#plannerBrand {
 }
 
 QLabel#sectionCaption {
-  color: #8f8798;
-  font-size: 13px;
-  font-weight: 800;
+  color: #c5bdc7;
+  font-size: 16px;
+  font-weight: 400;
   letter-spacing: 2px;
 }
 
 QFrame#viewSwitcherWrap {
-  background-color: rgba(12, 10, 18, 160);
-  border-radius: 14px;
+  background: transparent;
 }
 
 QPushButton#viewSwitchBtn {
-  background: transparent;
+  background: rgba(20, 18, 28, 120);
   border: 1px solid transparent;
-  border-radius: 12px;
+  border-radius: 14px;
   color: #9c95a1;
   text-align: left;
+  min-height: 52px;
 }
 
 QPushButton#viewSwitchBtn:hover {
@@ -43,16 +43,16 @@ QPushButton#viewSwitchBtn:hover {
 
 QPushButton#viewSwitchBtn[active="true"] {
   background-color: rgba(14, 12, 20, 230);
-  border: 1px solid rgba(240, 63, 131, 70);
-  color: #F03F83;
+  border: 1px solid rgba(240, 63, 131, 90);
 }
 
 QLabel#viewSwitchLabel {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 400;
+  color: #F6F0F4;
 }
 
-QPushButton#viewSwitchBtn[active="true"] QLabel#viewSwitchLabel {
+QLabel#viewSwitchLabel[active="true"] {
   color: #F03F83;
 }
 
@@ -61,59 +61,85 @@ QFrame#tagRow {
 }
 
 QLabel#tagDot {
-  font-size: 14px;
+  font-size: 16px;
 }
 
 QLabel#tagName {
-  color: #e8e2ec;
-  font-size: 13px;
+  color: #F6F0F4;
+  font-size: 16px;
+  font-weight: 400;
 }
 
 QLabel#tagCount {
   color: #8f8798;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 QLabel#weekRangeLabel {
-  font-family: "Noto Serif";
+  font-family: "Noto Sans";
   font-size: 24px;
-  font-weight: 700;
+  font-weight: 400;
   color: #F6F0F4;
 }
 
 QPushButton#navButton {
-  background: rgba(22, 20, 28, 200);
-  border: 1px solid #322d39;
-  border-radius: 10px;
+  background: transparent;
+  border: none;
   color: #c5bdc7;
-  font-size: 18px;
-  min-width: 40px;
-  min-height: 40px;
+  font-size: 32px;
+  font-weight: 300;
+  min-width: 48px;
+  min-height: 48px;
+  padding: 0;
 }
 
 QPushButton#navButton:hover {
-  border-color: #F03F83;
   color: #F6F0F4;
+  background: transparent;
+}
+
+QPushButton#navButton:pressed {
+  color: #F03F83;
 }
 
 QPushButton#primaryButton {
   background-color: #F03F83;
   color: #F6F0F4;
   border: none;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 700;
-  padding: 10px 22px;
+  border-radius: 14px;
+  font-size: 18px;
+  font-weight: 500;
+  text-align: center;
+  padding: 0 26px;
+  min-height: 44px;
+  max-height: 44px;
 }
 
 QPushButton#primaryButton:hover {
   background-color: #FF5A9B;
 }
 
+QWidget#calendarView,
+QFrame#weekHeaderBar {
+  background: transparent;
+}
+
 QFrame#weekGridWrap {
-  background-color: rgba(12, 10, 18, 180);
+  background: transparent;
   border: 1px solid #2a2530;
   border-radius: 14px;
+}
+
+QScrollArea#weekGridScroll,
+QScrollArea#weekGridScroll > QWidget > QWidget {
+  background: transparent;
+  border: none;
+}
+
+QWidget#weekGridScrollBody,
+QWidget#weekGridCols,
+QFrame#timeRuler {
+  background: transparent;
 }
 
 QFrame#dayHeaderCell {
@@ -122,13 +148,13 @@ QFrame#dayHeaderCell {
 
 QLabel#dayName {
   color: #6f6875;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 800;
 }
 
 QLabel#dayNumber {
   color: #F6F0F4;
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 700;
 }
 
@@ -142,18 +168,24 @@ QFrame#dayColumn {
 }
 
 QLabel#timeLabel {
-  color: #5f5868;
-  font-size: 11px;
+  color: #F6F0F4;
+  font-size: 14px;
+}
+
+QLabel#eventBlockTime,
+QLabel#eventBlockTitle,
+QLabel#eventBlockTag {
+  margin: 0;
+  padding: 0;
 }
 
 QLabel#eventBlockTime {
-  color: #9c95a1;
-  font-size: 10px;
+  font-size: 11px;
 }
 
 QLabel#eventBlockTitle {
   color: #F6F0F4;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
 }
 
@@ -161,28 +193,112 @@ QLabel#eventBlockTag {
   font-size: 10px;
 }
 
-QDialog#addEventDialog {
-  background-color: #1c1923;
-  border: 1px solid #393443;
-  border-radius: 12px;
+QDialog#confirmDialog {
+  background: transparent;
 }
 
-QLabel#dialogTitle {
+QFrame#confirmDialogSurface {
+  background-color: #17151f;
+  border: 1px solid #393443;
+  border-radius: 16px;
+}
+
+QLabel#confirmDialogMessage {
+  color: #F6F0F4;
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 500;
+}
+
+QDialog#addEventDialog {
+  background: transparent;
+}
+
+QDialog#addEventDialog QFrame#windowSurface {
+  border-radius: 20px;
+}
+
+QDialog#addEventDialog QFrame#titleBar {
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+}
+
+QFrame#addEventDialogBody {
+  background-color: #17151f;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+QLabel#dialogHeading {
+  font-size: 22px;
+  font-weight: 600;
   color: #F6F0F4;
 }
 
-QLineEdit#dialogField,
-QComboBox#dialogField,
-QDateEdit#dialogField {
-  background-color: #1b1921;
+QLabel#dialogFieldCaption {
+  color: #6f6875;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
+
+QLineEdit#dialogField {
+  background-color: #1e1c26;
   border: 1px solid #322d39;
-  border-radius: 9px;
+  border-radius: 10px;
   color: #f7f2f6;
-  padding: 8px 12px;
+  font-size: 14px;
+  padding: 12px 14px;
+  min-height: 22px;
+}
+
+QLineEdit#dialogField:focus {
+  border: 1px solid #F03F83;
+}
+
+QPushButton#dialogTagChip {
+  background-color: #1e1c26;
+  border: 1px solid #322d39;
+  border-radius: 18px;
+  color: #9c95a1;
   font-size: 13px;
-  min-height: 20px;
+  font-weight: 400;
+  padding: 8px 16px;
+}
+
+QPushButton#dialogTagChip:hover {
+  color: #e8e2ec;
+  border-color: #4a4354;
+}
+
+QPushButton#dialogCancelButton {
+  background-color: #1e1c26;
+  border: 1px solid #322d39;
+  border-radius: 10px;
+  color: #c5bdc7;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 22px;
+  min-height: 40px;
+}
+
+QPushButton#dialogCancelButton:hover {
+  color: #F6F0F4;
+  border-color: #4a4354;
+}
+
+QPushButton#dialogSaveButton {
+  background-color: #F03F83;
+  border: none;
+  border-radius: 10px;
+  color: #F6F0F4;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 24px;
+  min-height: 40px;
+}
+
+QPushButton#dialogSaveButton:hover {
+  background-color: #FF5A9B;
 }
 
 QFrame#plannerContent {
@@ -193,6 +309,21 @@ QFrame#plannerContent {
   );
   border: none;
   border-bottom-right-radius: 11px;
+}
+
+QWidget#tasksView {
+  background: transparent;
+}
+
+QScrollArea#tasksScroll,
+QScrollArea#tasksScroll > QWidget > QWidget {
+  background: transparent;
+  border: none;
+}
+
+QWidget#tasksScrollBody,
+QFrame#taskSection {
+  background: transparent;
 }
 
 QLabel#tasksTitle {
