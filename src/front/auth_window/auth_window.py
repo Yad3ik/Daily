@@ -7,8 +7,8 @@ _REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-from PyQt5.QtCore import QRectF, Qt
-from PyQt5.QtGui import QColor, QFont, QFontDatabase, QIcon, QPainter, QPainterPath
+from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtGui import QFont, QFontDatabase, QIcon
 from PyQt5.QtWidgets import QApplication, QFrame, QHBoxLayout, QVBoxLayout, QWidget
 
 if __package__:
@@ -35,14 +35,17 @@ class AuthWindow(QWidget):
     def __init__(self):
         """Собирает UI, шрифты, стили; центрирует на экране."""
         super().__init__()
+        self.setObjectName("authWindow")
         self._planner_window: QWidget | None = None
         self._load_fonts()
 
         self.setWindowTitle("Daily")
         self.resize(960, 740)
         self.setMinimumSize(960, 740)
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window)
-        self.setAttribute(Qt.WA_TranslucentBackground)
+        self.setWindowFlags(
+            Qt.FramelessWindowHint | Qt.Window | Qt.WindowMinimizeButtonHint
+        )
+        self.setAutoFillBackground(True)
         self.setWindowIcon(_app_icon())
 
         self._build_ui()
@@ -64,6 +67,7 @@ class AuthWindow(QWidget):
 
         surface = QFrame()
         surface.setObjectName("windowSurface")
+        surface.setAttribute(Qt.WA_StyledBackground, True)
         surface_layout = QVBoxLayout(surface)
         surface_layout.setContentsMargins(0, 0, 0, 0)
         surface_layout.setSpacing(0)
@@ -104,23 +108,16 @@ class AuthWindow(QWidget):
         else:
             self.showMaximized()
 
-    def paintEvent(self, event):
-        """Скруглённый фон окна."""
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
-        rect = QRectF(self.rect()).adjusted(0.5, 0.5, -0.5, -0.5)
-        path = QPainterPath()
-        path.addRoundedRect(rect, 16, 16)
-        painter.fillPath(path, QColor("#15131a"))
-        painter.setPen(QColor("#393443"))
-        painter.drawPath(path)
-        super().paintEvent(event)
+    def minimize_window(self) -> None:
+        """Сворачивает в панель задач."""
+        self.setWindowState(self.windowState() | Qt.WindowMinimized)
 
     def _on_auth_success(self) -> None:
         """Открывает PlannerWindow и скрывает auth."""
         if self._planner_window is None:
             self._planner_window = PlannerWindow()
         self._planner_window.show()
+        QTimer.singleShot(0, self._planner_window.apply_initial_layout)
         self.hide()
 
 

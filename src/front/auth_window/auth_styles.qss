@@ -10,6 +10,12 @@ QWidget {
   font-size: 11px;
 }
 
+/* Непрозрачный фон корневого окна (без WA_TranslucentBackground — иначе размытие в углах) */
+QWidget#authWindow,
+QWidget#plannerWindow {
+  background-color: #15131a;
+}
+
 /* --- Оболочка окна (скругление, рамка) --- */
 QFrame#windowSurface {
   background-color: #15131a;

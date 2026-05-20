@@ -15,6 +15,13 @@ class WindowControlButton(QPushButton):
         self.setObjectName("titleButton")
         self.setFixedSize(32, 30)
         self.setCursor(Qt.PointingHandCursor)
+        self.setAutoRepeat(False)
+        self.setFocusPolicy(Qt.NoFocus)
+
+    def mousePressEvent(self, event):
+        """Не отдаём нажатие title bar (drag)."""
+        event.accept()
+        super().mousePressEvent(event)
 
     def paintEvent(self, event):
         """Рисует пиктограмму по kind."""
@@ -70,7 +77,10 @@ class TitleBar(QFrame):
         for button in (minimize, maximize, close):
             button.setCursor(Qt.PointingHandCursor)
 
-        minimize.clicked.connect(window.showMinimized)
+        if hasattr(window, "minimize_window"):
+            minimize.clicked.connect(window.minimize_window)
+        else:
+            minimize.clicked.connect(window.showMinimized)
         maximize.clicked.connect(window.toggle_maximized)
         close.clicked.connect(window.close)
 
@@ -94,11 +104,8 @@ class TitleBar(QFrame):
 
     def mouseMoveEvent(self, event):
         """Перемещает окно за title bar."""
-        if (
-            self.drag_position
-            and event.buttons() & Qt.LeftButton
-            and not self.window.isMaximized()
-        ):
+        expanded = getattr(self.window, "_is_expanded", self.window.isMaximized())
+        if self.drag_position and event.buttons() & Qt.LeftButton and not expanded:
             self.window.move(event.globalPos() - self.drag_position)
             event.accept()
 
