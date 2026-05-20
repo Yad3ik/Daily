@@ -7,8 +7,8 @@ _REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-from PyQt5.QtCore import QRectF, Qt
-from PyQt5.QtGui import QColor, QFont, QFontDatabase, QIcon, QPainter, QPainterPath
+from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtGui import QFont, QFontDatabase, QIcon
 from PyQt5.QtWidgets import QApplication, QFrame, QHBoxLayout, QStackedWidget, QVBoxLayout, QWidget
 
 from src.front.common.widgets import TitleBar
@@ -30,27 +30,34 @@ class PlannerWindow(QWidget):
     def __init__(self) -> None:
         """Собирает UI, стили и открывает календарь."""
         super().__init__()
+        self.setObjectName("plannerWindow")
         self._load_fonts()
 
         self.setWindowTitle("Daily")
-        self.resize(1920, 1080)
-        self.setMinimumSize(1440, 900)
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window)
-        self.setAttribute(Qt.WA_TranslucentBackground)
+        self.setWindowFlags(
+            Qt.FramelessWindowHint | Qt.Window | Qt.WindowMinimizeButtonHint
+        )
+        self._is_expanded = False
+        self._auto_fit_on_show = True
+        self._toggle_busy = False
+        self.setAutoFillBackground(True)
         self.setWindowIcon(QIcon(str(APP_ICON_PATH.resolve())))
 
+        self._screen_fitted = False
         self._calendar_state = CalendarState()
         self._build_ui()
         self._apply_styles()
-        self._center_on_screen()
         self._show_view("calendar")
 
-    def _center_on_screen(self) -> None:
-        """Центрирует окно на доступной области экрана."""
+    def _fit_to_screen(self) -> None:
+        """Занимает всю доступную область экрана (без панели задач ОС)."""
         screen = QApplication.primaryScreen().availableGeometry()
-        frame = self.frameGeometry()
-        frame.moveCenter(screen.center())
-        self.move(frame.topLeft())
+        self.setMinimumSize(
+            min(960, screen.width()),
+            min(600, screen.height()),
+        )
+        self.setGeometry(screen)
+        self._is_expanded = True
 
     def _load_fonts(self) -> None:
         """Подключает Noto Sans из assets auth."""
@@ -74,6 +81,7 @@ class PlannerWindow(QWidget):
 
         surface = QFrame()
         surface.setObjectName("windowSurface")
+        surface.setAttribute(Qt.WA_StyledBackground, True)
         surface_layout = QVBoxLayout(surface)
         surface_layout.setContentsMargins(0, 0, 0, 0)
         surface_layout.setSpacing(0)
@@ -128,24 +136,38 @@ class PlannerWindow(QWidget):
             self._stack.setCurrentWidget(self._calendar_view)
             self._calendar_view.refresh()
 
+    def apply_initial_layout(self) -> None:
+        """Один раз при открытии: растянуть на весь экран."""
+        if self._screen_fitted or not self._auto_fit_on_show:
+            return
+        self._screen_fitted = True
+        self._fit_to_screen()
+
     def toggle_maximized(self) -> None:
-        """Разворачивает или восстанавливает окно."""
-        if self.isMaximized():
-            self.showNormal()
+        """На весь экран или ~85% (квадрат в title bar)."""
+        if self._toggle_busy:
+            return
+        self._toggle_busy = True
+        QTimer.singleShot(250, lambda: setattr(self, "_toggle_busy", False))
+
+        screen = QApplication.primaryScreen().availableGeometry()
+        if self._is_expanded:
+            w = max(self.minimumWidth(), int(screen.width() * 0.85))
+            h = max(self.minimumHeight(), int(screen.height() * 0.85))
+            self.setGeometry(
+                screen.x() + (screen.width() - w) // 2,
+                screen.y() + (screen.height() - h) // 2,
+                w,
+                h,
+            )
+            self._is_expanded = False
+            self._auto_fit_on_show = False
         else:
-            self.showMaximized()
+            self._auto_fit_on_show = True
+            self._fit_to_screen()
 
-    def paintEvent(self, event) -> None:
-        """Рисует скруглённый фон окна."""
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
-        rect = QRectF(self.rect()).adjusted(0.5, 0.5, -0.5, -0.5)
-        path = QPainterPath()
-        path.addRoundedRect(rect, 16, 16)
-        painter.fillPath(path, QColor("#15131a"))
-        painter.setPen(QColor("#393443"))
-        painter.drawPath(path)
-        super().paintEvent(event)
-
+    def minimize_window(self) -> None:
+        """Сворачивает в панель задач (для frameless-окна)."""
+        self.setWindowState(self.windowState() | Qt.WindowMinimized)
 
 __all__ = ["PlannerWindow", "QSS_PATH"]
