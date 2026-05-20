@@ -11,6 +11,8 @@ class Calendar:
 
     @staticmethod
     def get(date_from: date, date_to: date) -> list[dict]:
+        '''     Получение всех events пользователя в сыром виде.    '''
+
         db = Calendar._get_db()
 
         res = (
@@ -32,8 +34,10 @@ class Calendar:
         finish: datetime,
         description: str,
         tag: str | None = None,
-        color: str | None = None,
-    ) -> dict:
+        color: str | None = None) -> dict:
+
+        '''     Добавление нового события в бд. Обновляет две таблицы   '''
+
         db = Calendar._get_db()
 
         event_res = db.table('events').insert({
@@ -56,6 +60,8 @@ class Calendar:
 
     @staticmethod
     def delete(event_id: str) -> None:
+        '''     Удаление события.    '''
+
         db = Calendar._get_db()
 
         db.table('user_events').delete().eq('event_id', event_id).execute()

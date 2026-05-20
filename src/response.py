@@ -2,9 +2,7 @@ from pydantic import BaseModel, Field
 
 
 class Response(BaseModel):
-    """
-    Унифицированный ответ бэкенда для вызовов из UI.
-    """
+    '''    Ответ на запросы UI    '''
     status_code: int = Field(
         ...,
         ge=100,

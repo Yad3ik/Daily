@@ -4,11 +4,15 @@ from src.response import Response
 from src.session import Me
 
 def _sort_tasks() -> None:
+    '''     Сортировка задач по статусу (стабильная)     '''
+
     if Me.Tasks is None:
         return
     Me.Tasks.sort(key=lambda x: x.is_complete)
 
 def _update_tasks() -> Response:
+    '''     Обновление session.Me.Tasks + сортировка     '''
+
     try:
         response = ToDoList.get_all()
         Me.Tasks = [Task.from_dict(task) for task in response]
@@ -20,6 +24,8 @@ def _update_tasks() -> Response:
         return Response(status_code=505, message="Database error", exception=str(e))
 
 def add_new_task(name: str, is_complete: bool = False) -> Response:
+    '''     Добавление новой задачи, обновление session.Me.Tasks     '''
+
     try:
         task = ToDoList.add_new(name, is_complete)
         Me.Tasks = [Task.from_dict(task)] + Me.Tasks
@@ -29,6 +35,8 @@ def add_new_task(name: str, is_complete: bool = False) -> Response:
         return Response(status_code=500, message="Internal server error", exception=str(e))
 
 def delete_task(id: str) -> Response:
+    '''     Удаление задачи по id, обновление session.Me.Tasks     '''
+
     try:
         ToDoList.delete_task(id)
         Me.Tasks = [task for task in Me.Tasks if task.id != id]
@@ -37,6 +45,8 @@ def delete_task(id: str) -> Response:
         return Response(status_code=500, message="Internal server error", exception=str(e))
 
 def set_complete(id: str, is_complete: bool) -> Response:
+    '''     Установка статуса, обновление session.Me.Tasks     '''
+
     try:
 
         task = next((task for task in Me.Tasks if task.id == id), None)

@@ -9,7 +9,7 @@ class CurrentUser(BaseModel):
 
 
 class Me:
-    """Глобальное состояние сессии."""
+    '''    Глобальное состояние текущей сессии    '''
 
     user: ClassVar[CurrentUser | None] = None
     Tasks: ClassVar[list[Task] | None] = None
@@ -20,6 +20,7 @@ class Me:
 
     @classmethod
     def require_user_id(cls) -> str:
+        '''     Безопасное получение user_id    '''
         if cls.user is None:
             raise AuthError("Not authenticated")
         return cls.user.id

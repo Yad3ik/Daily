@@ -1,6 +1,6 @@
 import bcrypt
 
-from supabase import Client, create_client
+from supabase import Client
 from src.config import Config
 from src.back.db.exceptions import *
 
@@ -10,6 +10,8 @@ class Auth:
         return Config.DB
     @staticmethod
     def create_new_user(login: str, password: str) -> str:
+        '''         Создание нового пользователя.       '''
+
         db = Auth._get_db()
 
         hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
@@ -27,6 +29,8 @@ class Auth:
 
     @staticmethod
     def login_user(login: str, password: str) -> str:
+        '''    Авторизация, проверка совпадения хеша пароля.    '''
+
         db = Auth._get_db()
 
         res = db.table("users").select("id, pass_hash").eq("login", login).limit(1).execute()
@@ -44,6 +48,8 @@ class Auth:
 
     @staticmethod
     def _delete_user(user_id: str) -> None:
+        '''         Удаление пользователя из бд.        '''
+
         db = Auth._get_db()
 
         try:

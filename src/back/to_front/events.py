@@ -6,10 +6,17 @@ from src.response import Response
 
 
 def get_week_monday(d: date) -> date:
+    '''    По дате возвращает понедельник текущей недели    '''
+
     return d - timedelta(days=d.weekday())
 
 
 def get_events(date_start: date, date_finish: date) -> list[list[Event]]:
+    '''     
+        Получение всех событий, их распределение по датам.
+        Возвращение списка списков событий по дням из диапозона дат.
+    '''
+
     raw = Calendar.get(date_start, date_finish)
     events = [Event.from_dict(item) for item in raw]
 
@@ -32,6 +39,8 @@ def add_new_event(
     description: str,
     tag: str | None = None,
     color: str | None = None) -> Response:
+    '''     Добавление нового события в бд. Обработка исключений.     '''
+
     if tag is not None:
         color = TAGS[tag]
     start_dt = start if isinstance(start, datetime) else datetime.combine(event_date, start)
@@ -44,6 +53,8 @@ def add_new_event(
 
 
 def delete_event(event_id: str) -> Response:
+    '''     Удаление события по id     '''
+
     try:
         Calendar.delete(event_id)
         return Response(status_code=200, message="Event deleted successfully")

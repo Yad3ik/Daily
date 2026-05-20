@@ -1,1 +1,1 @@
-# Application source package
+# App source package

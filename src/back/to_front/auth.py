@@ -2,9 +2,14 @@ from src.back.db.auth import Auth
 from src.back.db.exceptions import *
 from src.session import Me, CurrentUser
 from src.response import Response
-from src.back.to_front.todo import _update_tasks
+from src.back.to_front.todo import _update_tasks # Обновление session.Me.Tasks
 
 def sign_up(login: str, password: str) -> Response:
+    ''' 
+        Регистрация пользователя, обработка исключений.
+        При успешной регистрации устанвливается session.Me 
+    '''
+
     try:
         user_id = Auth.create_new_user(login, password)
         Me.set_user(CurrentUser(id=user_id, login=login))
@@ -21,6 +26,8 @@ def sign_up(login: str, password: str) -> Response:
         return Response(status_code=500, message="Internal server error", exception=str(e))
 
 def sign_in(login: str, password: str) -> Response:
+    '''     Вход в аккаунт, Обработка исключений      '''
+
     try:
         user_id = Auth.login_user(login, password)
         Me.set_user(CurrentUser(id=user_id, login=login))
@@ -38,10 +45,14 @@ def sign_in(login: str, password: str) -> Response:
         return Response(status_code=500, message="Internal server error", exception=str(e))
 
 def sign_out() -> Response:
+    '''    Сброс session.Me    '''
+
     Me.clear()
     return Response(status_code=200, message="User logged out successfully")
 
 def delete_user(id: str | None = None) -> Response: # id is optional for testing
+    '''    Удаление аккаунта, после чего sign_out   '''
+
     try:
         if id is None:
             id = Me.require_user_id()

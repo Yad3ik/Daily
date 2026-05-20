@@ -10,6 +10,8 @@ class ToDoList:
     
     @staticmethod
     def add_new(desc: str, is_complete: bool = False) -> dict:
+        '''  Добавление новой задачи, is_comlete не обязателен   '''
+
         db = ToDoList._get_db()
 
         res = db.table('tasks').insert({
@@ -22,12 +24,16 @@ class ToDoList:
     
     @staticmethod
     def delete_task(task_id: str) -> None:
+        '''      Удаление задачи из бд       '''
+
         db = ToDoList._get_db()
 
         res = db.table('tasks').delete().eq('id', task_id).execute()
     
     @staticmethod
     def set_complete(task_id: str, value: bool) -> None:
+        '''    Установить статус задачи: done/not done    '''
+
         db = ToDoList._get_db()
 
         res = db.table('tasks').update({
@@ -36,6 +42,8 @@ class ToDoList:
     
     @staticmethod
     def get_all() -> list[dict]:
+        '''    Получение всех задач текущего пользователя в порядке добавление.   '''
+
         db = ToDoList._get_db()
 
         res = db.table('tasks').select('*').eq('user_id', Me.require_user_id()).order('created_at', desc=True).execute()

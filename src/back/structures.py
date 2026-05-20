@@ -3,6 +3,8 @@ from datetime import date, time, datetime
 from pydantic import BaseModel, Field
 
 class Task(BaseModel):
+    '''     Структура задачи     '''
+
     id: str = Field(..., min_length=1)
     name: str = Field(..., min_length=1)
     is_complete: bool = Field(default=False)
@@ -16,6 +18,8 @@ class Task(BaseModel):
 
 
 class Event(BaseModel):
+    '''     Структура события     '''
+
     id: str = Field(..., min_length=1)
     event_date: date
     start: time
@@ -37,5 +41,4 @@ class Event(BaseModel):
             finish=datetime.fromisoformat(ev['finish']).time(),
             description=ev['description'],
             tag=ev.get('tag'),
-            color=ev.get('color'),
-        )
+            color=ev.get('color'))
