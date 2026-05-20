@@ -1,3 +1,5 @@
+"""Окно авторизации: вход, регистрация, переход в планировщик."""
+
 import sys
 from pathlib import Path
 
@@ -12,7 +14,6 @@ from PyQt5.QtWidgets import QApplication, QFrame, QHBoxLayout, QVBoxLayout, QWid
 if __package__:
     from ..planner_window import PlannerWindow
     from .widgets import AuthCard, LeftPanel, TitleBar
-    from .widgets.asset_builder import ensure_asserts
 else:
     _auth_dir = Path(__file__).resolve().parent
     _front_dir = _auth_dir.parent
@@ -20,7 +21,6 @@ else:
     sys.path.insert(0, str(_auth_dir))
     from planner_window import PlannerWindow
     from widgets import AuthCard, LeftPanel, TitleBar
-    from widgets.asset_builder import ensure_asserts
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -30,10 +30,12 @@ APP_ICON_PATH = ASSERTS_DIR / "icons" / "daily_logo.png"
 
 
 class AuthWindow(QWidget):
+    """Безрамочное окно с левой промо-панелью и формой входа."""
+
     def __init__(self):
+        """Собирает UI, шрифты, стили; центрирует на экране."""
         super().__init__()
         self._planner_window: QWidget | None = None
-        ensure_asserts()
         self._load_fonts()
 
         self.setWindowTitle("Daily")
@@ -48,12 +50,14 @@ class AuthWindow(QWidget):
         self._center_on_screen()
 
     def _center_on_screen(self):
+        """Центрирует окно на экране."""
         screen = QApplication.primaryScreen().availableGeometry()
         frame = self.frameGeometry()
         frame.moveCenter(screen.center())
         self.move(frame.topLeft())
 
     def _build_ui(self):
+        """TitleBar, LeftPanel и AuthCard."""
         root = QVBoxLayout(self)
         root.setContentsMargins(1, 1, 1, 1)
         root.setSpacing(0)
@@ -84,20 +88,24 @@ class AuthWindow(QWidget):
         root.addWidget(surface)
 
     def _load_fonts(self):
+        """Регистрирует TTF из asserts/fonts."""
         for font_file in (ASSERTS_DIR / "fonts").glob("*.ttf"):
             QFontDatabase.addApplicationFont(str(font_file))
         QApplication.instance().setFont(QFont("Noto Sans", 10))
 
     def _apply_styles(self):
+        """Подключает auth_styles.qss."""
         self.setStyleSheet(QSS_PATH.read_text(encoding="utf-8"))
 
     def toggle_maximized(self):
+        """Развернуть / восстановить окно."""
         if self.isMaximized():
             self.showNormal()
         else:
             self.showMaximized()
 
     def paintEvent(self, event):
+        """Скруглённый фон окна."""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
         rect = QRectF(self.rect()).adjusted(0.5, 0.5, -0.5, -0.5)
@@ -109,6 +117,7 @@ class AuthWindow(QWidget):
         super().paintEvent(event)
 
     def _on_auth_success(self) -> None:
+        """Открывает PlannerWindow и скрывает auth."""
         if self._planner_window is None:
             self._planner_window = PlannerWindow()
         self._planner_window.show()
@@ -121,10 +130,9 @@ def _app_icon() -> QIcon:
 
 
 def main():
+    """Точка входа: auth → exec."""
     app = QApplication(sys.argv)
     app.setApplicationName("Daily")
-    # Иначе setWindowIcon до первого ensure_asserts() — файла ещё нет, иконка не подхватится.
-    ensure_asserts()
     icon = _app_icon()
     app.setWindowIcon(icon)
     try:

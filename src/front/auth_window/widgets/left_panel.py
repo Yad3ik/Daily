@@ -1,3 +1,5 @@
+"""Левая промо-панель окна авторизации."""
+
 from pathlib import Path
 
 from PyQt5.QtCore import Qt
@@ -12,7 +14,10 @@ from PyQt5.QtWidgets import (
 
 
 class EventRow(QFrame):
+    """Демо-строка события в карточке расписания."""
+
     def __init__(self, time: str, title: str, tag: str, color_name: str):
+        """Статичный пример для превью на auth."""
         super().__init__()
         self.setObjectName(f"eventRow_{color_name}")
         self.setFixedHeight(32)
@@ -40,7 +45,10 @@ class EventRow(QFrame):
 
 
 class ScheduleCard(QFrame):
+    """Мини-карточка «Сегодня» с двумя демо-событиями."""
+
     def __init__(self):
+        """Фиксированный макет для левой панели."""
         super().__init__()
         self.setObjectName("scheduleCard")
         self.setFixedHeight(116)
@@ -78,6 +86,7 @@ class ScalingIllustration(QLabel):
     _ZOOM = 1.22
 
     def __init__(self, image_path: Path):
+        """image_path — desk_scene.png."""
         super().__init__()
         self.setObjectName("illustration")
         self._source = QPixmap(str(image_path))
@@ -86,14 +95,17 @@ class ScalingIllustration(QLabel):
         self.setMinimumHeight(200)
 
     def resizeEvent(self, event):
+        """Масштабирует иллюстрацию при ресайзе."""
         super().resizeEvent(event)
         self._update_pixmap()
 
     def showEvent(self, event):
+        """Первичное масштабирование при показе."""
         super().showEvent(event)
         self._update_pixmap()
 
     def _update_pixmap(self):
+        """Масштаб с _ZOOM и KeepAspectRatioByExpanding."""
         if self._source.isNull():
             return
         w = max(1, round(self.width() * self._ZOOM))
@@ -105,7 +117,10 @@ class ScalingIllustration(QLabel):
 
 
 class LeftPanel(QFrame):
+    """Брендинг, слоган, иллюстрация и ScheduleCard."""
+
     def __init__(self, asserts_dir: Path):
+        """Собирает левую колонку auth-окна."""
         super().__init__()
         self.asserts_dir = asserts_dir
         self.setObjectName("leftPanel")

@@ -1,3 +1,5 @@
+"""Боковая панель планировщика."""
+
 from PyQt5.QtCore import Qt, QRectF
 from PyQt5.QtGui import (
     QColor,
@@ -16,7 +18,10 @@ _ICON_COLOR = QColor("#c8b6e2")
 
 
 class _TagRow(QFrame):
+    """Строка тега с цветной точкой и счётчиком событий."""
+
     def __init__(self, name: str, color: str, count: int) -> None:
+        """Отображает имя тега и число событий."""
         super().__init__()
         self.setObjectName("tagRow")
         lay = QHBoxLayout(self)
@@ -41,7 +46,10 @@ class _TagRow(QFrame):
 
 
 class Sidebar(QFrame):
+    """Левая панель: переключатель видов и список тегов."""
+
     def __init__(self, on_view_changed, calendar_state: CalendarState) -> None:
+        """Собирает ViewSwitcher и блок тегов."""
         super().__init__()
         self.setObjectName("plannerSidebar")
         self.setFixedWidth(300)
@@ -78,10 +86,12 @@ class Sidebar(QFrame):
         root.addStretch(1)
 
     def set_active_view(self, key: str) -> None:
+        """Подсвечивает вид; теги видны только в календаре."""
         self._switcher.set_active(key)
         self._tags_wrap.setVisible(key == "calendar")
 
     def refresh_tags(self, tag_counts: dict[str, int] | None = None) -> None:
+        """Перестраивает строки тегов по счётчикам событий."""
         counts = tag_counts or {}
         while self._tags_list.count():
             item = self._tags_list.takeAt(0)
@@ -94,6 +104,7 @@ class Sidebar(QFrame):
             self._tag_rows.append(row)
 
     def paintEvent(self, event) -> None:
+        """Градиентный фон сайдбара."""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
         rect = self.rect()

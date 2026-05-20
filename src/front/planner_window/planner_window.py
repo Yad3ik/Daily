@@ -1,4 +1,4 @@
-"""Main planner window (calendar and tasks)."""
+"""Главное окно планировщика: календарь и задачи."""
 
 import sys
 from pathlib import Path
@@ -11,7 +11,6 @@ from PyQt5.QtCore import QRectF, Qt
 from PyQt5.QtGui import QColor, QFont, QFontDatabase, QIcon, QPainter, QPainterPath
 from PyQt5.QtWidgets import QApplication, QFrame, QHBoxLayout, QStackedWidget, QVBoxLayout, QWidget
 
-from src.front.auth_window.widgets.asset_builder import ensure_asserts
 from src.front.common.widgets import TitleBar
 
 from .calendar_state import CalendarState
@@ -26,9 +25,11 @@ APP_ICON_PATH = _AUTH_ASSERTS / "icons" / "daily_logo.png"
 
 
 class PlannerWindow(QWidget):
+    """Безрамочное окно с сайдбаром и переключением календарь/задачи."""
+
     def __init__(self) -> None:
+        """Собирает UI, стили и открывает календарь."""
         super().__init__()
-        ensure_asserts()
         self._load_fonts()
 
         self.setWindowTitle("Daily")
@@ -45,12 +46,14 @@ class PlannerWindow(QWidget):
         self._show_view("calendar")
 
     def _center_on_screen(self) -> None:
+        """Центрирует окно на доступной области экрана."""
         screen = QApplication.primaryScreen().availableGeometry()
         frame = self.frameGeometry()
         frame.moveCenter(screen.center())
         self.move(frame.topLeft())
 
     def _load_fonts(self) -> None:
+        """Подключает Noto Sans из assets auth."""
         fonts_dir = _AUTH_ASSERTS / "fonts"
         if fonts_dir.exists():
             for font_file in fonts_dir.glob("*.ttf"):
@@ -58,11 +61,13 @@ class PlannerWindow(QWidget):
         QApplication.instance().setFont(QFont("Noto Sans", 10))
 
     def _apply_styles(self) -> None:
+        """Склеивает QSS auth и planner."""
         auth_qss = (_BASE_DIR.parent / "auth_window" / "auth_styles.qss").read_text(encoding="utf-8")
         planner_qss = QSS_PATH.read_text(encoding="utf-8")
         self.setStyleSheet(auth_qss + "\n" + planner_qss)
 
     def _build_ui(self) -> None:
+        """Title bar, сайдбар и стек CalendarView / TasksView."""
         root = QVBoxLayout(self)
         root.setContentsMargins(1, 1, 1, 1)
         root.setSpacing(0)
@@ -104,13 +109,16 @@ class PlannerWindow(QWidget):
         root.addWidget(surface)
 
     def _title_for_view(self, view_key: str) -> str:
+        """HTML-заголовок title bar для вида."""
         label = "Календарь" if view_key == "calendar" else "Задачи"
         return f'<b><span style="color:#F03F83;">Daily</span></b> · {label}'
 
     def _on_view_changed(self, view_key: str) -> None:
+        """Обработчик сигнала сайдбара."""
         self._show_view(view_key)
 
     def _show_view(self, view_key: str) -> None:
+        """Переключает стек и вызывает refresh активного вида."""
         self._sidebar.set_active_view(view_key)
         self._title_bar.title.setText(self._title_for_view(view_key))
         if view_key == "tasks":
@@ -121,12 +129,14 @@ class PlannerWindow(QWidget):
             self._calendar_view.refresh()
 
     def toggle_maximized(self) -> None:
+        """Разворачивает или восстанавливает окно."""
         if self.isMaximized():
             self.showNormal()
         else:
             self.showMaximized()
 
     def paintEvent(self, event) -> None:
+        """Рисует скруглённый фон окна."""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
         rect = QRectF(self.rect()).adjusted(0.5, 0.5, -0.5, -0.5)

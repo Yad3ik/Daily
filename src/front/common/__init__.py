@@ -1,1 +1,1 @@
-"""Shared front-end assets, styles, and widgets."""
+"""Общие компоненты front для auth и planner."""

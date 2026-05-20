@@ -1,3 +1,5 @@
+"""Сетка недели: заголовки дней, шкала времени и колонки событий."""
+
 from collections.abc import Callable
 from datetime import date, datetime
 
@@ -14,12 +16,16 @@ from .time_ruler import TimeRuler
 
 
 class _NowLineOverlay(QWidget):
+    """Розовая линия текущего времени поверх колонок."""
+
     def __init__(self, parent: QWidget) -> None:
+        """Прозрачный оверлей без перехвата мыши."""
         super().__init__(parent)
         self.setAttribute(Qt.WA_TransparentForMouseEvents)
         self.raise_()
 
     def paintEvent(self, event) -> None:
+        """Рисует горизонтальную линию «сейчас»."""
         now = datetime.now()
         y = int((now.hour * 60 + now.minute) / 60 * HOUR_HEIGHT)
         painter = QPainter(self)
@@ -30,11 +36,14 @@ class _NowLineOverlay(QWidget):
 
 
 class WeekGrid(QFrame):
+    """Прокручиваемая недельная сетка с 7 колонками."""
+
     def __init__(
         self,
         state: CalendarState,
         on_event_clicked: Callable[[Event], None] | None = None,
     ) -> None:
+        """Шапка дней, TimeRuler и DayColumn на каждый день."""
         super().__init__()
         self.setObjectName("weekGridWrap")
         self._state = state
@@ -95,11 +104,13 @@ class WeekGrid(QFrame):
         self._now_line = _NowLineOverlay(cols_host)
 
     def resizeEvent(self, event) -> None:
+        """Подгоняет геометрию линии «сейчас»."""
         super().resizeEvent(event)
         if hasattr(self, "_overlay_host"):
             self._now_line.setGeometry(0, 0, self._overlay_host.width(), GRID_HEIGHT)
 
     def set_events_by_day(self, events_by_day: list[list[Event]]) -> None:
+        """Заполняет колонки событиями и обновляет оверлей."""
         days = self._state.week_days
         for day, col, header, day_events in zip(
             days, self._day_columns, self._header_cells, events_by_day
@@ -110,10 +121,11 @@ class WeekGrid(QFrame):
         self._scroll_to_morning()
 
     def _scroll_to_morning(self) -> None:
-        """Default scroll position: ~07:00 like the mockup."""
+        """Прокрутка к ~07:00 по умолчанию."""
         self._scroll.verticalScrollBar().setValue(7 * HOUR_HEIGHT)
 
     def scroll_to_now(self) -> None:
+        """Прокручивает так, чтобы текущее время было в зоне видимости."""
         now = datetime.now()
         y = int((now.hour * 60 + now.minute) / 60 * HOUR_HEIGHT)
         self._scroll.verticalScrollBar().setValue(max(0, y - self._scroll.height() // 3))

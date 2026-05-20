@@ -1,3 +1,5 @@
+"""Секция списка задач (в работе / выполнено)."""
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QVBoxLayout
 
@@ -7,7 +9,10 @@ from .task_row import TaskRow
 
 
 class TaskSection(QFrame):
+    """Заголовок с бейджем и список TaskRow."""
+
     def __init__(self, title: str, completed: bool) -> None:
+        """title — подпись секции; completed влияет на стиль строк."""
         super().__init__()
         self.setObjectName("taskSection")
         self._completed = completed
@@ -32,6 +37,7 @@ class TaskSection(QFrame):
         root.addLayout(self._rows_layout)
 
     def set_tasks(self, tasks: list[Task], on_changed) -> None:
+        """Пересобирает строки и обновляет счётчик."""
         while self._rows_layout.count():
             item = self._rows_layout.takeAt(0)
             if item.widget():

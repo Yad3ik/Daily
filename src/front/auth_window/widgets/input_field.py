@@ -1,3 +1,5 @@
+"""Поле ввода с иконкой для форм auth."""
+
 from pathlib import Path
 
 from PyQt5.QtCore import QSize, Qt
@@ -6,7 +8,10 @@ from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QLineEdit, QPushButton
 
 
 class AuthInput(QFrame):
+    """Иконка + QLineEdit; для пароля — кнопка «глаз»."""
+
     def __init__(self, asserts_dir: Path, placeholder: str, icon_name: str, password=False):
+        """password=True включает EchoMode и кнопку показа."""
         super().__init__()
         self.setObjectName("inputFrame")
         self.setFixedHeight(54)
@@ -42,9 +47,11 @@ class AuthInput(QFrame):
             layout.addWidget(eye)
 
     def text(self):
+        """Текст из line_edit."""
         return self.line_edit.text()
 
     def toggle_password(self):
+        """Переключает видимость пароля."""
         mode = self.line_edit.echoMode()
         self.line_edit.setEchoMode(
             QLineEdit.Normal if mode == QLineEdit.Password else QLineEdit.Password

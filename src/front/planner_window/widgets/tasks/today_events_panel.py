@@ -1,3 +1,5 @@
+"""Панель «Сегодня в календаре» на вкладке задач."""
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QLabel, QSizePolicy, QVBoxLayout
 
@@ -6,6 +8,7 @@ from src.config import TAGS
 
 
 def _events_title(count: int) -> str:
+    """Склонение: «N событие/события/событий сегодня»."""
     n = count % 100
     if 11 <= n <= 14:
         word = "событий"
@@ -21,7 +24,10 @@ def _events_title(count: int) -> str:
 
 
 class _TodayEventRow(QFrame):
+    """Компактная строка: время, цветная полоска, название."""
+
     def __init__(self, event: Event) -> None:
+        """Строит разметку из Event."""
         super().__init__()
         self.setObjectName("todayEventRow")
         self.setFixedHeight(34)
@@ -53,14 +59,17 @@ class _TodayEventRow(QFrame):
         layout.addWidget(self._title_lbl, 1)
 
     def resizeEvent(self, event) -> None:
+        """Обрезает длинное название."""
         super().resizeEvent(event)
         self._elide_title()
 
     def showEvent(self, event) -> None:
+        """Первичная обрезка названия."""
         super().showEvent(event)
         self._elide_title()
 
     def _elide_title(self) -> None:
+        """ElideRight для _title_lbl."""
         w = self._title_lbl.width()
         if w <= 0:
             return
@@ -72,7 +81,10 @@ class _TodayEventRow(QFrame):
 
 
 class TodayEventsPanel(QFrame):
+    """Карточка со списком событий на сегодня (до 4 шт.)."""
+
     def __init__(self) -> None:
+        """Заголовок, счётчик и список строк."""
         super().__init__()
         self.setObjectName("todayEventsPanel")
         self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
@@ -111,6 +123,7 @@ class TodayEventsPanel(QFrame):
         root.addWidget(self._empty)
 
     def set_events(self, events: list[Event]) -> None:
+        """Перестраивает список; пустое — «Нет событий»."""
         while self._list_host.count():
             item = self._list_host.takeAt(0)
             if item.widget():

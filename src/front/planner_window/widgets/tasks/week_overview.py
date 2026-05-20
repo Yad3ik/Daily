@@ -1,3 +1,5 @@
+"""Мини-календарь недели на вкладке задач."""
+
 from datetime import date
 
 from PyQt5.QtCore import Qt
@@ -7,7 +9,10 @@ _DAY_NAMES = ("ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС")
 
 
 class _DayCell(QFrame):
+    """Одна ячейка: день недели, число, точка событий."""
+
     def __init__(self) -> None:
+        """Пустая ячейка; данные через set_day."""
         super().__init__()
         self.setObjectName("weekDayCell")
 
@@ -35,6 +40,7 @@ class _DayCell(QFrame):
         layout.addWidget(self._dot, 0, Qt.AlignCenter)
 
     def set_day(self, day: date, *, has_events: bool) -> None:
+        """Подсветка «сегодня» и точки при has_events."""
         self._name.setText(_DAY_NAMES[day.weekday()])
         self._num.setText(str(day.day))
         today = date.today()
@@ -50,7 +56,10 @@ class _DayCell(QFrame):
 
 
 class WeekOverview(QFrame):
+    """Ряд из 7 ячеек под заголовком «НЕДЕЛЯ»."""
+
     def __init__(self) -> None:
+        """Создаёт 7 _DayCell."""
         super().__init__()
         self.setObjectName("weekOverview")
         self._cells: list[_DayCell] = []
@@ -72,5 +81,6 @@ class WeekOverview(QFrame):
         root.addLayout(row)
 
     def set_week(self, days: list[date], event_counts: dict[date, int]) -> None:
+        """Заполняет ячейки датами и флагом событий."""
         for day, cell in zip(days, self._cells):
             cell.set_day(day, has_events=event_counts.get(day, 0) > 0)
