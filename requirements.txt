@@ -1,0 +1,8 @@
+pydantic==2.12.4
+python-dotenv==1.2.2
+supabase==2.28.3
+PyQt5==5.15.11
+pyqt-tools==1.0.0
+bcrypt==5.0.0
+pytest==9.0.3
+pytest-cov==7.1.0
